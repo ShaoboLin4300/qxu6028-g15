@@ -91,6 +91,74 @@ def _normalise(rh, rs):
     return np.column_stack([rh / np.max(np.abs(rh)), rs / np.max(rs)])
 
 
+
+def library_curves(T, c, gaps_kt=(1.0, 2.0, 4.0, 8.0)):
+    """Model library sampled on the candidate grid, for the report figures.
+
+    Returns the normalised observables of the cone and of several hard-gap
+    models, plus the electron and hole populations of the cone.  Everything is
+    recomputed from the same grid used by the fit, so the figure and the fit
+    cannot drift apart.
+    """
+    kT = C.KB * T
+    EF = np.linspace(C.EF_GRID_MIN_KT * kT, C.EF_GRID_MAX_KT * kT, C.N_EF_GRID)
+    E = np.linspace(C.E_MIN, C.E_MAX, C.N_E_L2)
+    F = C.fermi(E[None, :], EF[:, None], T)
+    upper = (E[None, :] >= EF[:, None])
+
+    models = [("cone", "cone", 0.0)] + [(f"{g:g} kT", "hard_gap", g) for g in gaps_kt]
+    out = {"EF_eV": EF.tolist(), "kT_eV": float(kT), "models": []}
+    for label, kind, eg_kt in models:
+        g = C.dos(E, kind, c, eg_kt * kT)
+        n = C.NA * np.trapezoid(np.where(upper, g[None, :] * F, 0.0), E, axis=1)
+        p_ = C.NA * np.trapezoid(np.where(~upper, g[None, :] * (1.0 - F), 0.0), E, axis=1)
+        RH, Rs = C.hall_and_sheet(n, p_)
+        out["models"].append({
+            "label": label, "Eg_kT": float(eg_kt),
+            "RH_norm": (RH / np.max(np.abs(RH))).tolist(),
+            "Rs_norm": (Rs / np.max(Rs)).tolist(),
+            "n": n.tolist(), "p": p_.tolist(), "n_sum": (n + p_).tolist(),
+        })
+    # density of states, subsampled so the diagnostics stay small
+    idx = np.arange(0, len(E), 20)
+    out["dos_curve"] = {
+        "E_eV": E[idx].tolist(),
+        "cone": (c * np.abs(E))[idx].tolist(),
+        "gap_2kT": C.dos(E, "hard_gap", c, 2.0 * kT)[idx].tolist(),
+    }
+    return out
+
+
+def cross_check(T, c):
+    """Compare the L1 correction factor with the same ratio computed in the L2
+    model grid: an independent check that the two phases use one counting rule.
+    """
+    kT = C.KB * T
+    EF = np.linspace(0.03, 0.25, 12)
+    E_fine = np.linspace(0.0, C.E_MAX, C.N_E_L1)
+    c_l1 = []
+    for ef in EF:
+        nb = C.NA * np.trapezoid(c * E_fine * C.fermi(E_fine, ef, T), E_fine)
+        nf = C.NA * c * kT * (ef * np.log(2.0) + (np.pi ** 2 / 12.0) * kT)
+        c_l1.append(nb / nf)
+    E_model = np.linspace(C.E_MIN, C.E_MAX, C.N_E_L2)
+    c_model = []
+    for ef in EF:
+        g = c * np.abs(E_model)
+        f = C.fermi(E_model, ef, T)
+        nb = C.NA * np.trapezoid(np.where(E_model >= 0.0, g * f, 0.0), E_model)
+        nf = C.NA * np.trapezoid(np.where(E_model >= ef, g * f, 0.0), E_model)
+        c_model.append(nb / nf)
+    c_l1 = np.asarray(c_l1)
+    c_model = np.asarray(c_model)
+    return {
+        "EF_eV": EF.tolist(),
+        "C_L1": c_l1.tolist(),
+        "C_model_grid": c_model.tolist(),
+        "max_rel_dev": float(np.max(np.abs(c_model / c_l1 - 1.0))),
+    }
+
+
 def run(ds):
     p = ds["l1_params"]
     T, c = ds["l2_meta"]["T_K"], p["c"]
@@ -167,6 +235,8 @@ def run(ds):
         "bootstrap_Eg_kT": boot_Eg.tolist(),
         "residual_by_gap_kT": [float(models[k]["Eg_kT"]) for k in range(1, len(models))],
         "residual_by_gap": [float(fits[k]["rms"]) for k in range(1, len(fits))],
+        "library": library_curves(T, c),
+        "cross_check": cross_check(T, c),
         "EF_band_halfwidth_eV": ((ef_hi - ef_lo) / 2).tolist(),
         "bootstrap_models": [1 if m == "hard_gap" else 0 for m in boot_model],
         "EF_trajectory_uncertainty_16_84_eV": {"lower": ef_lo.tolist(), "upper": ef_hi.tolist()},

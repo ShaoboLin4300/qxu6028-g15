@@ -143,6 +143,85 @@ def l2_raw(d, path):
     return _save(fig, path)
 
 
+def l2_library(d, path):
+    """Model library: DoS, carrier windows, phase space and the L1 cross-check."""
+    lib = d["library"]
+    EF = np.asarray(lib["EF_eV"]) * 1e3
+    kT_meV = lib["kT_eV"] * 1e3
+    models = lib["models"]
+    dose = lib["dos_curve"]
+
+    fig, ax = plt.subplots(2, 2, figsize=(9.6, 6.4), constrained_layout=True)
+
+    # (a) density of states
+    Ed = np.asarray(dose["E_eV"]) * 1e3
+    gc = np.asarray(dose["cone"]) * 1e3
+    gg = np.asarray(dose["gap_2kT"]) * 1e3
+    ax[0, 0].plot(Ed, gc, color=BLUE, lw=1.6,
+                  label=r"cone, $g=c|E|$")
+    ax[0, 0].fill_between(Ed, gg, gc, where=gc >= gg, color=ORANGE, alpha=0.30, lw=0)
+    ax[0, 0].plot(Ed, gg, color=ORANGE, lw=1.6, ls="--",
+                  label=r"hard gap, $E_g=2\,k_BT$")
+    ax[0, 0].axvspan(-kT_meV, kT_meV, color=GREY, alpha=0.12, lw=0)
+    ax[0, 0].annotate("states removed\nby a 2 $k_BT$ gap", xy=(0.0, 0.0),
+                      xytext=(0.5, 0.62), textcoords="axes fraction",
+                      ha="center", fontsize=7, color=ORANGE)
+    ax[0, 0].set_xlim(-120, 120)
+    ax[0, 0].set_ylim(0, 6.2)
+    ax[0, 0].set_xlabel(r"$E$ (meV)")
+    ax[0, 0].set_ylabel(r"$g(E)$ ($10^{-3}$ cm$^{-2}$ eV$^{-1}$)")
+    ax[0, 0].set_title("(a) density of states of the two model classes")
+    ax[0, 0].legend(loc="upper left", handlelength=1.4)
+    _clean(ax[0, 0])
+
+    # (b) carrier windows of the cone
+    cone = models[0]
+    ax[0, 1].plot(EF, np.asarray(cone["n"]) * 1e-11, color=BLUE, lw=1.5, label="$n$")
+    ax[0, 1].plot(EF, np.asarray(cone["p"]) * 1e-11, color=RED, lw=1.5, label="$p$")
+    ax[0, 1].plot(EF, np.asarray(cone["n_sum"]) * 1e-11, color=GREY, lw=1.3,
+                  ls=(0, (3, 2)), label="$n+p$")
+    ax[0, 1].axvline(0, color="#cccccc", lw=0.8)
+    ax[0, 1].set_xlabel(r"$E_F$ (meV)")
+    ax[0, 1].set_ylabel(r"carrier density ($10^{11}$ cm$^{-2}$)")
+    ax[0, 1].set_title("(b) the two Fermi windows of the cone")
+    ax[0, 1].legend(loc="upper center", ncol=3, handlelength=1.2)
+    _clean(ax[0, 1])
+
+    # (c) phase space
+    for k, m in enumerate(models):
+        ax[1, 0].plot(m["Rs_norm"], m["RH_norm"], lw=1.4,
+                      color=PALETTE[k % len(PALETTE)],
+                      ls="-" if k == 0 else "--",
+                      label=f"{m['label']}")
+    ax[1, 0].plot(np.asarray(d["rs_norm"]), np.asarray(d["rh_norm"]), "o", ms=3.0,
+                  color="k", mfc="none", mew=0.7, label="measured")
+    ax[1, 0].plot(1.0, 0.0, "*", ms=9, color="k")
+    ax[1, 0].set_xlabel(r"$\tilde R_s = R_s/\max R_s$")
+    ax[1, 0].set_ylabel(r"$\tilde R_H = R_H/\max|R_H|$")
+    ax[1, 0].set_title("(c) model trajectories in the fit space")
+    ax[1, 0].legend(loc="lower left", fontsize=6.6, handlelength=1.2)
+    _clean(ax[1, 0])
+
+    # (d) cross-module check
+    cc = d["cross_check"]
+    ef = np.asarray(cc["EF_eV"]) * 1e3
+    ax[1, 1].plot(ef, cc["C_L1"], color="#333333", lw=1.8,
+                  label="L1: $n_{\\rm band}/n_F$ (fine grid)")
+    ax[1, 1].plot(ef, cc["C_model_grid"], "o", ms=4.5, mfc="none", mec=RED,
+                  mew=1.0, label="L2 model grid")
+    ax[1, 1].annotate(f"max deviation {cc['max_rel_dev']*100:.3f} %",
+                      (0.06, 0.88), xycoords="axes fraction", fontsize=7.5,
+                      color=RED)
+    ax[1, 1].set_xlabel(r"$E_F$ (meV)")
+    ax[1, 1].set_ylabel(r"correction factor $C$")
+    ax[1, 1].set_title("(d) the same counting rule in both phases")
+    ax[1, 1].legend(loc="lower right", handlelength=1.4)
+    _clean(ax[1, 1])
+
+    fig.suptitle("L2 model library and cross-phase consistency", fontsize=10.5)
+    return _save(fig, path)
+
+
 def l2_model_fit(d, path):
     fig, ax = plt.subplots(figsize=(5.0, 3.9))
     rh = np.asarray(d["rh_norm"])

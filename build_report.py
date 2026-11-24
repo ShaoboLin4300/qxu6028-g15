@@ -36,14 +36,15 @@ SYM = {
 FIGURES = {
     1: ("fig1_l1_sweep.png", 16.2),
     2: ("fig2_l2_raw_repeats.png", 9.0),
-    3: ("fig3_l2_model_fit.png", 7.2),
-    4: ("fig4_l2_channels.png", 15.2),
-    5: ("fig5_l2_ef_trajectory.png", 11.6),
-    6: ("fig6_l2_bootstrap.png", 15.2),
-    7: ("fig7_l3_map.png", 15.2),
-    8: ("fig8_l3_method.png", 13.0),
-    9: ("fig9_l3_resolution.png", 10.6),
-    10: ("fig10_l3_forward.png", 11.0),
+    3: ("fig3_l2_library.png", 15.0),
+    4: ("fig4_l2_model_fit.png", 7.4),
+    5: ("fig5_l2_channels.png", 15.2),
+    6: ("fig6_l2_ef_trajectory.png", 11.6),
+    7: ("fig7_l2_bootstrap.png", 15.2),
+    8: ("fig8_l3_map.png", 15.2),
+    9: ("fig9_l3_method.png", 13.2),
+    10: ("fig10_l3_resolution.png", 10.6),
+    11: ("fig11_l3_forward.png", 11.0),
 }
 
 
