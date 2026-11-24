@@ -133,6 +133,13 @@ def run(ds):
     # located before normalisation
     sign_change = np.where(np.diff(np.sign(rh_mean)) != 0)[0]
 
+    # Physical consistency check between the two channels: a positive R_H means
+    # hole-dominated transport, so the assigned E_F must cross zero at the same
+    # index as the measured R_H (Methods Guide, page 6 and page 7)
+    traj_sign_change = np.where(np.diff(np.sign(EF_traj)) != 0)[0]
+    gate_ok = (len(sign_change) > 0 and len(traj_sign_change) > 0
+               and abs(traj_sign_change[0] - sign_change[0]) <= 1)
+
     result = {
         "model": sel["model"],
         "Eg_kT": float(sel["Eg_kT"]),
@@ -169,4 +176,11 @@ def run(ds):
 
     # Length requirement from the Methods Guide, page 8
     assert len(result["EF_trajectory_eV"]) == len(idx)
+    assert gate_ok, ("the assigned E_F must cross zero where R_H changes sign: "
+                     f"trajectory {list(traj_sign_change)} vs data {list(sign_change)}")
+    diagnostics["zero_crossing_gate"] = {
+        "RH_sign_change_index_position": [int(v) for v in sign_change],
+        "EF_zero_crossing_index_position": [int(v) for v in traj_sign_change],
+        "consistent": bool(gate_ok),
+    }
     return result, diagnostics

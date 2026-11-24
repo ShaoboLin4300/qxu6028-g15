@@ -1,4 +1,3 @@
-﻿outputs/**/diagnostics.json
-__pycache__/
+﻿__pycache__/
 *.pyc
 
