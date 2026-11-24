@@ -1,0 +1,4 @@
+﻿outputs/**/diagnostics.json
+__pycache__/
+*.pyc
+

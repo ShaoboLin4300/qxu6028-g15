@@ -1,0 +1,16 @@
+QXU6028 reproduce.py | commit NO_GIT_REPO
+python 3.12.14 | numpy 2.3.5
+
+=== dataset: regular | D:\deepseek harness工作区\qxu6028_g15\data\regular_G15 ===
+L1 correction_factor=2.640806 n_F=3.800585e+11 cm^-2 mu=63461.54 cm2/Vs
+L1 gates: 0.000 eV -> 1.0000 (target 1.0), 0.073 eV -> 2.0049 (target 2.0), 0.100 eV -> 2.5988 (target 2.6), 0.200 eV -> 5.1044 (target 5.1)
+L2 model=cone Eg=0.000 kT unc=[0.0, 0.0] n_traj=49 r_cone=0.015634 r_gap=0.019701 gap_fraction=0.000
+L3 max|m|=0.035782 delta95=3.204e-06 eta0=1.331e-03 resolution=1.444 pitch decision=CLEAR FAIL
+figures written to D:\deepseek harness工作区\qxu6028_g15\figures\regular
+
+=== dataset: blind | D:\deepseek harness工作区\qxu6028_g15\data\blind_G15 ===
+L1 correction_factor=4.374842 n_F=6.313855e+11 cm^-2 mu=42604.73 cm2/Vs
+L1 gates: 0.000 eV -> 1.0000 (target 1.0), 0.073 eV -> 2.0049 (target 2.0), 0.100 eV -> 2.5988 (target 2.6), 0.200 eV -> 5.1044 (target 5.1)
+L2 model=cone Eg=0.000 kT unc=[0.0, 0.0] n_traj=45 r_cone=0.013271 r_gap=0.017427 gap_fraction=0.000
+L3 max|m|=0.044173 delta95=3.251e-05 eta0=1.331e-03 resolution=1.444 pitch decision=CLEAR FAIL
+figures written to D:\deepseek harness工作区\qxu6028_g15\figures\blind
