@@ -148,6 +148,7 @@ def add_paragraph(doc, text, style=None):
     par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     fill_paragraph(par, text)
     if re.match(r"^\*\*Table \d+", text):
+        par.alignment = WD_ALIGN_PARAGRAPH.CENTER
         for r in par.runs:
             r.font.size = Pt(9)
             r.bold = True
@@ -299,7 +300,7 @@ def insert_figures(doc, nums, captions):
         pic.paragraph_format.keep_with_next = True
         pic.add_run().add_picture(str(FIG / fname), width=Cm(width))
         cap = doc.add_paragraph()
-        cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
         cap.paragraph_format.space_after = Pt(8)
         fill_paragraph(cap, captions.get(num, ""))
         for r in cap.runs:
