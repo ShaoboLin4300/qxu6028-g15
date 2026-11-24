@@ -1,0 +1,7 @@
+﻿# Supplied data must survive a checkout byte-for-byte (manifest.json records SHA-256).
+*.csv -text
+*.json -text
+*.txt -text
+*.npy binary
+*.png binary
+*.docx binary
