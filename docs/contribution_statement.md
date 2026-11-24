@@ -10,10 +10,10 @@ statement means an individual-contribution score of 0.**
 
 | member | student ID | phases | what this member developed, checked and interpreted | evidence in the repository / session record |
 |---|---|---|---|---|
-| *[name 1]* | *[ID]* | L1, L2 | *[e.g. wrote the carrier-count integration, checked the 2.60 gate, ran the L2 gate explanation]* | *[e.g. `src/l1.py`, commit `xxxxxxx`, L1 checkpoint zip]* |
-| *[name 2]* | *[ID]* | L2, L3 | *[e.g. nearest-point fit, bootstrap, blind-test run]* | *[e.g. `src/l2.py`, `outputs/blind/run_log.txt`]* |
-| *[name 3]* | *[ID]* | L3 | *[e.g. Tikhonov solve, eta scan, PSF and detection-limit test]* | *[e.g. `src/l3.py`, `figures/regular/fig5_l3_method.png`]* |
-| *[name 4]* | *[ID]* | all three | *[e.g. report drafting, figure checking, reproducibility test, AI error ledger]* | *[e.g. `docs/report.md`, `docs/ai_error_ledger.md`, clean-clone log]* |
+| Lin Shaobo | 2023304300 | L1, L2 | Band-edge and Fermi-referenced carrier counts with the closed-form cross-check; L2 model library and nearest-point fit. | `src/l1.py`, `src/l2.py`; Figures 1 and 3; L1 checkpoint |
+| Miao Shize | 2023304317 | L2, L3 | 200-replicate bootstrap and model-selection rule; blind-test run and its evidence set. | `src/l2.py` (bootstrap); `outputs/blind/run_log.txt`; Figure 6 |
+| Wang Yuzhe | 2023304283 | L3 | Tikhonov reconstruction, eta scan, point-spread resolution test and the 500-vector detection limit. | `src/l3.py`; Figures 8–10; Table 3 |
+| Wenjie Xu | 2023304282 | all three | Report, figures and process records; clean-clone reproducibility test and the consistency checker. | `docs/`, `src/figures.py`, `check_consistency.py`; Figures 4, 7, 11, 12 |
 
 ## Declaration
 

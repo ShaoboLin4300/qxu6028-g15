@@ -403,8 +403,19 @@ def build():
             continue
         if block.startswith("**QXU6028") or block.startswith("Group G15"):
             p = doc.add_paragraph()
-            r = p.add_run(re.sub(r"[*]", "", block))
-            r.font.size = Pt(10)
+            text = re.sub(r"[*]", "", block)
+            parts = text.split(" · ")
+            if len(parts) > 3:                      # group line with four members
+                half = 1 + (len(parts) - 1) // 2
+                first, second = " · ".join(parts[:half]), " · ".join(parts[half:])
+                r = p.add_run(first)
+                r.font.size = Pt(10)
+                r.add_break()
+                r2 = p.add_run(second)
+                r2.font.size = Pt(10)
+            else:
+                r = p.add_run(text)
+                r.font.size = Pt(10)
             p.paragraph_format.space_after = Pt(2)
             continue
         if block.startswith("Repository:"):

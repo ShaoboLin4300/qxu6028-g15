@@ -24,10 +24,10 @@ Do not rewrite or force-push; the history is part of the evidence.
 
 | member | student ID | role in this repository | commits / files |
 |---|---|---|---|
-| *(member 1)* | *(ID)* | L1 carrier counting: `src/l1.py`, L1 figure, gate checks | *(to be filled)* |
-| *(member 2)* | *(ID)* | L2 inverse problem: `src/l2.py`, bootstrap, model library figure | *(to be filled)* |
-| *(member 3)* | *(ID)* | L3 inversion: `src/l3.py`, regularisation scan, resolution and detection limit | *(to be filled)* |
-| *(member 4)* | *(ID)* | Report, figures and process records: `docs/`, `src/figures.py`, reproducibility test | *(to be filled)* |
+| Lin Shaobo | 2023304300 | L1 carrier counting and L2 model library: `src/l1.py`, `src/l2.py` | Figures 1 and 3 |
+| Miao Shize | 2023304317 | L2 bootstrap and blind-test evidence: `src/l2.py`, `outputs/blind/` | Figure 6 |
+| Wang Yuzhe | 2023304283 | L3 inversion, resolution and detection limit: `src/l3.py` | Figures 8-10, Table 3 |
+| Wenjie Xu | 2023304282 | Report, figures, process records, reproducibility: `docs/`, `src/figures.py` | Figures 4, 7, 11, 12 |
 
 ## What the marker can check here
 

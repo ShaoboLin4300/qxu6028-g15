@@ -1,7 +1,7 @@
 # What a wafer is really like: extraction scale, density-of-states class and spatial uniformity from simulated transport
 
 **QXU6028 Polymer Devices — virtual-laboratory group coursework, AY 2026–27**
-Group G15 · [student names and IDs to be inserted by the group before submission]
+Group G15 · Lin Shaobo 2023304300 · Miao Shize 2023304317 · Wang Yuzhe 2023304283 · Wenjie Xu 2023304282
 Repository: *[GitHub/Gitee link]* · Commit that produced these numbers: see `outputs/regular/results.json → pipeline_commit`.
 
 ---
