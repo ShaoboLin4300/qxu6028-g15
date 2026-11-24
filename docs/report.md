@@ -9,7 +9,7 @@ Repository: *[GitHub/Gitee link]* · Commit that produced these numbers: see `ou
 ## 1. Context and question
 
 A characterisation team is given sheet-resistance and Hall data from a simulated
-graphene-on-sapphire wafer and has to answer three questions that a customer
+graphene-on-sapphire wafer [4] and has to answer three questions that a customer
 would actually ask. First, what carrier density and mobility does the wafer
 have, given that the datasheet used a textbook band-edge count. Second, is the
 material gapless or gapped, and how far did the Fermi level drift while the
@@ -39,7 +39,7 @@ Both integrals were evaluated on 20 001 points with the trapezoidal rule and
 cross-checked against the closed form
 $n_F = N_Ac k_BT\,[E_F\ln 2 + (\pi^2/12)k_BT]$, which agree to $4\times10^{-7}$.
 The correction factor $C=n_{\rm band}/n_F$ follows, and because
-$\mu = 1/(e n \rho)$ at a fixed sheet resistivity, $\mu_F = C\,\mu_B$: the same
+$\mu = 1/(e n \rho)$ [1] at a fixed sheet resistivity, $\mu_F = C\,\mu_B$: the same
 factor multiplies the mobility. The operating point $E_{F,\rm op}=0.101816$ eV
 was taken from `L1_params.json`, not from the nearest row of the sweep.
 
@@ -180,7 +180,7 @@ to less than $10^{-15}$, so a uniform offset is invisible to the probe and the
 map must be constrained to zero mean. The rank is 92 rather than 100: eight directions are unconstrained, and the
 near-null modes are flat, so a direct inverse amplifies them into a spurious
 wafer-scale ramp. The reconstruction therefore
-projects out the constant mode, $P = I - uu^{\mathsf T}$ with $u=\mathbf 1/\sqrt N$, and solves
+projects out the constant mode [5], $P = I - uu^{\mathsf T}$ with $u=\mathbf 1/\sqrt N$, and solves
 $[P(A^{\mathsf T}A+\eta L^{\mathsf T}L)P + 10^{-9}I]\hat m = PA^{\mathsf T}\bar d$
 with $L$ the $180\times100$ first-difference operator and the smoothness reference
 $\eta_0 = 10^{-2}\lVert A\rVert_2^2/\lVert L\rVert_2^2 = 1.331\times10^{-3}$.
@@ -266,7 +266,7 @@ A printed polymer OFET uses the same three inferences but changes each model.
 Its density of states is not a cone but a broadened distribution of
 hopping and trap states, so occupancy — and hence the gate-voltage response — is
 set by a Gaussian or exponential tail rather than by $k_BT$-wide thermal
-smearing. The mobility extracted from a transfer curve uses the same Chapter 3
+smearing. The mobility extracted from a transfer curve uses the same Chapter 3 [1]
 relation $\mu = 1/(en\rho)$, which is exactly why L1 matters: the carrier count
 $n$ must come from the gate-charge model $n = C_i(V_G-V_T)/e$, not from a
 band-edge integral, and contact resistance in series with the channel biases any
@@ -311,11 +311,11 @@ transfers to fresh data, not evidence that it is correct.
 
 ## References
 
-1. QXU6028 Chapter 3, *Carrier counting and mobility*, lecture notes, 2026–27.
-2. QXU6028 Chapter 5, *Reading the density of states from transport*, lecture notes, 2026–27.
-3. QXU6028 Chapter 6, *Probe measurements and uniformity*, lecture notes, 2026–27.
-4. Novoselov, K. S. *et al.* (2004) 'Electric field effect in atomically thin carbon films', *Science*, 306(5696), pp. 666–669.
-5. Hansen, P. C. (1992) 'Analysis of discrete ill-posed problems by means of the L-curve', *SIAM Review*, 34(4), pp. 561–580.
+[1] QXU6028 Chapter 3, *Carrier counting and mobility*, lecture notes, 2026–27.
+[2] QXU6028 Chapter 5, *Reading the density of states from transport*, lecture notes, 2026–27.
+[3] QXU6028 Chapter 6, *Probe measurements and uniformity*, lecture notes, 2026–27.
+[4] Novoselov, K. S. *et al.* (2004) 'Electric field effect in atomically thin carbon films', *Science*, 306(5696), pp. 666–669.
+[5] Hansen, P. C. (1992) 'Analysis of discrete ill-posed problems by means of the L-curve', *SIAM Review*, 34(4), pp. 561–580.
 
 ## Figure captions
 

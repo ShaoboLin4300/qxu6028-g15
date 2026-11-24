@@ -149,7 +149,8 @@ def add_paragraph(doc, text, style=None):
     fill_paragraph(par, text)
     if re.match(r"^\*\*Table \d+", text):
         for r in par.runs:
-            r.font.size = Pt(8.5)
+            r.font.size = Pt(9)
+            r.bold = True
         par.paragraph_format.keep_with_next = True
         par.paragraph_format.space_before = Pt(8)
     return par
@@ -302,8 +303,10 @@ def insert_figures(doc, nums, captions):
         cap.paragraph_format.space_after = Pt(8)
         fill_paragraph(cap, captions.get(num, ""))
         for r in cap.runs:
-            r.font.size = Pt(8.5)
-            r.italic = True
+            r.font.size = Pt(9)
+            r.bold = True
+            if not r.italic:
+                r.italic = False
 
 
 def build():
@@ -323,6 +326,7 @@ def build():
         if (line.startswith("#") or line.startswith("---")
                 or line.startswith("**QXU6028") or line.startswith("Group G15")
                 or line.startswith("Repository:") or line.startswith("|")
+                or re.match(r"^\[\d+\]\s", line)
                 or re.match(r"^\d+\.\s", line)):
             if buf:
                 blocks.append(" ".join(buf))
