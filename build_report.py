@@ -15,7 +15,7 @@ from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Pt
+from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parent
 FIG = ROOT / "figures" / "regular"
@@ -234,6 +234,49 @@ def add_table(doc, rows):
     doc.add_paragraph().paragraph_format.space_after = Pt(2)
 
 
+
+def _field(par, code):
+    run = par.add_run()
+    begin = OxmlElement("w:fldChar")
+    begin.set(qn("w:fldCharType"), "begin")
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = code
+    end = OxmlElement("w:fldChar")
+    end.set(qn("w:fldCharType"), "end")
+    run._r.append(begin)
+    run._r.append(instr)
+    run._r.append(end)
+    return run
+
+
+def add_footer(section):
+    """Small footer: group and module on the left, page X of Y on the right."""
+    par = section.footer.paragraphs[0]
+    par.text = ""
+    par.paragraph_format.space_before = Pt(0)
+    par.paragraph_format.space_after = Pt(0)
+    tab_stops = par.paragraph_format.tab_stops
+    from docx.enum.text import WD_TAB_ALIGNMENT
+    tab_stops.add_tab_stop(Cm(16.4), WD_TAB_ALIGNMENT.RIGHT)
+    run = par.add_run("QXU6028 Polymer Devices \u2014 group G15 \u2014 coursework report")
+    run.font.size = Pt(8)
+    run.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+    par.add_run("\t\t")      # skip the inherited centre tab stop
+    r = par.add_run("Page ")
+    r.font.size = Pt(8)
+    r.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+    f = _field(par, " PAGE ")
+    f.font.size = Pt(8)
+    f.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+    r2 = par.add_run(" of ")
+    r2.font.size = Pt(8)
+    r2.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+    f2 = _field(par, " NUMPAGES ")
+    f2.font.size = Pt(8)
+    f2.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
+
+
 def parse_captions(text):
     caps = {}
     for m in re.finditer(r"\*\*Figure (\d+)\.\*\*(.+?)(?=\n\n|\Z)", text, re.S):
@@ -306,8 +349,11 @@ def build():
     style.font.name = "Calibri"
     style.font.size = Pt(10.5)
     for s in doc.sections:
+        s.page_width, s.page_height = Cm(21.0), Cm(29.7)      # A4, not Letter
         s.top_margin = s.bottom_margin = Cm(2.2)
         s.left_margin = s.right_margin = Cm(2.3)
+        s.footer_distance = Cm(1.0)
+        add_footer(s)
 
     done = set()
     title_done = False
