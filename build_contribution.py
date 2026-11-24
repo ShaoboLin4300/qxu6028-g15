@@ -53,7 +53,7 @@ MEMBERS = [
         "sig": "wang.png",
     },
     {
-        "name": "Wenjie Xu",
+        "name": "Xu Wenjie",
         "id": "2023304282",
         "phases": "all three",
         "work": "Report, figures and process records; clean-clone reproducibility test "

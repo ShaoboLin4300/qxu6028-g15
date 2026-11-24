@@ -27,7 +27,7 @@ Do not rewrite or force-push; the history is part of the evidence.
 | Lin Shaobo | 2023304300 | L1 carrier counting and L2 model library: `src/l1.py`, `src/l2.py` | Figures 1 and 3 |
 | Miao Shize | 2023304317 | L2 bootstrap and blind-test evidence: `src/l2.py`, `outputs/blind/` | Figure 6 |
 | Wang Yuzhe | 2023304283 | L3 inversion, resolution and detection limit: `src/l3.py` | Figures 8-10, Table 3 |
-| Wenjie Xu | 2023304282 | Report, figures, process records, reproducibility: `docs/`, `src/figures.py` | Figures 4, 7, 11, 12 |
+| Xu Wenjie | 2023304282 | Report, figures, process records, reproducibility: `docs/`, `src/figures.py` | Figures 4, 7, 11, 12 |
 
 ## What the marker can check here
 
