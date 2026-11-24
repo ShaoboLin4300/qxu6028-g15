@@ -124,6 +124,9 @@ def run_dataset(name, log):
     out = spec["out"]
     out.mkdir(parents=True, exist_ok=True)
     C.write_json(out / "results.json", results)
+    if name == "blind":
+        # the blind-test upload point asks for this exact filename
+        C.write_json(out / "blind_results.json", results)
 
     diagnostics = {
         "dataset": name,
