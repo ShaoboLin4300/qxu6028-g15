@@ -1,4 +1,4 @@
-# Submission checklist — group G15
+﻿# Submission checklist 鈥?group G15
 
 Deadline: **Tuesday 24 November 2026, 22:00 UK (GMT) = Wednesday 25 November
 2026, 06:00 China time (CST).** One submission per group, through the QXU6028
@@ -13,13 +13,13 @@ QMplus point.
       supplied schema exactly (`validate_schema` asserts keys, nesting, list
       lengths and finiteness on every run).
 - [x] Five figures per dataset in `figures/regular/` and `figures/blind/`.
-- [x] `docs/report.md` and `docs/G15_QXU6028_Report.docx` — body 2,095 words
+- [x] `docs/report.md` and `docs/G15_QXU6028_Report.docx` 鈥?body 2,109 words
       (limit 2,500), Transfer 167 words (limit 200).
-- [x] `docs/self_assessment.md` — 184 words (required 150–200).
-- [x] `docs/ai_error_ledger.md` — four entries, two of them physics.
-- [x] `docs/ai_usage_log.md` — tools, purposes, extent, verification.
-- [x] `blind_original/` — the historical Session-3 artefacts, labelled.
-- [x] `python check_consistency.py` — report/JSON/schema/decision consistency.
+- [x] `docs/self_assessment.md` 鈥?184 words (required 150鈥?00).
+- [x] `docs/ai_error_ledger.md` 鈥?four entries, two of them physics.
+- [x] `docs/ai_usage_log.md` 鈥?tools, purposes, extent, verification.
+- [x] `blind_original/` 鈥?the historical Session-3 artefacts, labelled.
+- [x] `python check_consistency.py` 鈥?report/JSON/schema/decision consistency.
 
 ## You must still do these (in this order)
 
@@ -37,7 +37,7 @@ QMplus point.
    rows, delete rows you do not need, make every evidence cell point at
    something a marker can open, then sign and export to PDF.
 5. **Open the Word report and check it.** The `.docx` is generated
-   programmatically — confirm that figures sit where you want them, subscripts
+   programmatically 鈥?confirm that figures sit where you want them, subscripts
    render correctly, and the page breaks are sensible. Export to PDF if the
    QMplus point asks for one.
 6. **Run the reproducibility gate once more, exactly as the marker will:**
@@ -57,7 +57,7 @@ QMplus point.
 
 - Do not edit any value in `results.json` by hand; if a number is wrong, fix the
   code and re-run.
-- Do not edit anything in `data/` — `manifest.json` records its SHA-256 and a
+- Do not edit anything in `data/` 鈥?`manifest.json` records its SHA-256 and a
   marker can verify it (the repo is configured so a checkout keeps the bytes
   identical).
 - Do not push changes after the deadline.

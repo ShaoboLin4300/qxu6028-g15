@@ -23,18 +23,18 @@ SYM = {
     r"\Omega": "Ω", r"\mu": "μ", r"\eta": "η", r"\delta": "δ", r"\rho": "ρ",
     r"\pi": "π", r"\ln": "ln", r"\lVert": "‖", r"\rVert": "‖",
     r"\rightarrow": "→", r"\to": "→", r"\infty": "∞", r"\square": "□",
-    r"\, ": "\u2009", r"\;": "\u2009", r"\quad": "\u2003", r"\cdot": "·",
+    r"\,": "\u2009", r"\;": "\u2009", r"\quad": "\u2003", r"\cdot": "·",
     r"\max": "max", r"\rm": "", r"\mathrm": "", r"\mathsf": "", r"\mathbf": "",
     r"\text": "", r"\bar": "\u0304", r"\hat": "\u0302", r"\sqrt": "√",
     r"\propto": "∝", r"\sigma": "σ", r"\sim": "~", r"\int": "∫",
 }
 
 FIGURES = [
-    ("2.", ["fig1_l1_sweep.png"],
+    ("2.", [("fig1_l1_sweep.png", 16.2)],
      "Figure 1. L1 carrier counting. (a) Correction factor C = n_band/n_F across the supplied sweep, with the C = 2 and C = 4 crossings, the exact operating point and the supplied rows. (b) The two finite-temperature counts on a logarithmic scale: they coincide at neutrality and separate as E_F rises."),
-    ("3.", ["fig2_l2_model_fit.png", "fig3_l2_ef_trajectory.png"],
+    ("3.", [("fig2_l2_model_fit.png", 9.6), ("fig3_l2_ef_trajectory.png", 14.4)],
      "Figure 2. L2 nearest-point fit in the separately normalised (R_H, R_s) plane. Points are the measured means coloured by acquisition index; the grey curve is the selected cone model. Figure 3. L2 Fermi-level trajectory against measurement index with the bootstrap 16–84 % band; the dotted line marks the R_H sign change at index 12, where the assigned E_F crosses zero."),
-    ("4.", ["fig4_l3_map.png", "fig5_l3_method.png"],
+    ("4.", [("fig4_l3_map.png", 16.2), ("fig5_l3_method.png", 16.2)],
      "Figure 4. L3 zero-mean reconstruction. (a) The full map with the positive and negative extrema marked; the wafer-scale gradient dominates. (b) The same map after removing the fitted plane, showing the localised features. Figure 5. L3 method evidence. (a) Data misfit against regularisation, with matched maps and the noise level of the three-repeat mean. (b) Reconstructed point-spread function, FWHM 1.44 probe pitches. (c) Distribution of max|m_noise| over 500 noise-only reconstructions."),
 ]
 
@@ -59,19 +59,23 @@ def emit_math(par, src, italic=True, sub=False, sup=False):
                 cmd = "\\" + m.group(1)
                 if cmd in (r"\bar", r"\hat"):
                     flush()
-                    nxt = src[i + len(cmd): i + len(cmd) + 1]
+                    j = i + len(cmd)
+                    while j < len(src) and src[j] == " ":
+                        j += 1
+                    nxt = src[j] if j < len(src) else ""
                     run = par.add_run((nxt or "") + SYM[cmd])
                     run.italic = italic
                     run.font.subscript = sub
                     run.font.superscript = sup
-                    i += len(cmd) + (1 if nxt else 0)
+                    i = j + (1 if nxt else 0)
                     continue
                 repl = SYM.get(cmd)
                 if repl is not None:
                     buf.append(repl)
                 i += len(cmd)
                 continue
-            buf.append(src[i + 1] if i + 1 < len(src) else "")
+            nxt = src[i + 1] if i + 1 < len(src) else ""
+            buf.append(SYM.get("\\" + nxt, nxt))
             i += 2
             continue
         if ch in "_^":
@@ -147,7 +151,8 @@ def build():
             continue
         if (line.startswith("#") or line.startswith("---")
                 or line.startswith("**QXU6028") or line.startswith("Group G15")
-                or line.startswith("Repository:")):
+                or line.startswith("Repository:")
+                or re.match(r"^\d+\.\s", line)):
             if buf:
                 blocks.append(" ".join(buf))
                 buf = []
@@ -204,11 +209,12 @@ def build():
             for num, files, caption in FIGURES:
                 if heading.startswith(num) and num not in figures_done:
                     figures_done.add(num)
-                    for f in files:
+                    for f, width in files:
                         pic = doc.add_paragraph()
                         pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
                         pic.paragraph_format.space_before = Pt(6)
-                        pic.add_run().add_picture(str(FIG / f), width=Cm(16.2))
+                        pic.paragraph_format.space_after = Pt(2)
+                        pic.add_run().add_picture(str(FIG / f), width=Cm(width))
                     cap = doc.add_paragraph()
                     cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
                     cr = cap.add_run(caption)
@@ -217,7 +223,7 @@ def build():
                     cap.paragraph_format.space_after = Pt(10)
             continue
         if re.match(r"^\d+\.\s", block):
-            add_paragraph(doc, block, style="List Number")
+            add_paragraph(doc, re.sub(r"^\d+\.\s+", "", block), style="List Number")
             continue
         add_paragraph(doc, block)
 

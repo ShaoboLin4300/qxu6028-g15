@@ -167,8 +167,8 @@ point-spread function is a single-pixel cross (Figure 5b). The noise-only
 ensemble gives $\delta_{95}=3.2\times10^{-6}$, i.e. $0.0003\,\%$ of the
 reference conductivity (Figure 5c).
 
-**Decision.** With $a=\max|\hat m|=3.58\,\%$ and $\delta_{95}=0.0003\,\%$, the
-decision envelope is $3.578\,\%\pm0.0003\,\%$ against a $3.0\,\%$ threshold. The
+**Decision.** With $a = \max|\hat m| = 3.58\,\%$ and $\delta_{95} = 0.0003\,\%$, the
+decision envelope is $(3.578 \pm 0.0003)\,\%$ against a $3.0\,\%$ threshold. The
 map is a **clear fail**: the shortfall of 0.58 percentage points is some two
 thousand times the detection limit, so this is not a borderline call. The fail is
 caused by the wafer-scale gradient, not by local defects: with the plane removed
@@ -227,8 +227,9 @@ The main limitation is that none of these conclusions is checked against an
 independent truth: the model class, the regularisation strength and the
 three-repeat noise estimate are all inferred from the same data they are used to
 interpret. The blind run of the identical pipeline — correction factor 4.37, cone
-DoS, 45 indices, $\max|\hat m|=4.42\,\%$, clear fail — is evidence that the method
-transfers to fresh data, not evidence that it is correct.
+DoS, 45 indices, a largest map amplitude of 4.42 % and the same clear fail — is
+evidence that the method transfers to fresh data, not evidence that it is
+correct.
 
 ## References
 
