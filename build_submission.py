@@ -36,9 +36,6 @@ FILES = [
     ("blind_results.json", OUT / "blind" / "blind_results.json"),
     ("run_log.txt", OUT / "blind" / "run_log.txt"),
     ("pipeline_commit.txt", OUT / "blind" / "pipeline_commit.txt"),
-    ("ai_usage_log.md", DOCS / "ai_usage_log.md"),
-    ("ai_error_ledger.md", DOCS / "ai_error_ledger.md"),
-    ("self_assessment.md", DOCS / "self_assessment.md"),
 ]
 
 RECORDS = ["ai_usage_log.md", "ai_error_ledger.md", "self_assessment.md"]
@@ -184,7 +181,7 @@ def records_pdf():
 
     src = SUB / "_records.docx"
     doc.save(src)
-    out = SUB / "_records.pdf"
+    out = SUB / "G15_Process_Records.pdf"
     if out.exists():
         out.unlink()
     subprocess.run([NODE, CLI, "convert", "--input", str(src), "--output", str(out)],
@@ -213,7 +210,6 @@ def main():
     pack = merge([SUB / "G15_Report.pdf",
                   SUB / "G15_Contribution_Statement.pdf", rec],
                  SUB / "G15_Complete_Pack.pdf")
-    rec.unlink(missing_ok=True)
 
     import zipfile
     bundle = SUB / "G15_Upload_Bundle.zip"
