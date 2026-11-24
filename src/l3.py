@@ -156,15 +156,15 @@ def run(ds, tau=C.TAU, npix=None):
     i_max, i_min = int(np.argmax(m)), int(np.argmin(m))
 
     # ---- resolution ----------------------------------------------------
-    res, psf_map, psf_pixel = [], None, None
+    res, psf_maps, psf_pixels = [], [], []
     for pix in (int(np.argmin(np.hypot(X, Y))), 27):
         q = np.zeros(N)
         q[pix] = 1.0
         q -= q.mean()
         mq = reconstruct(A, L, P, eta0, A @ q, N)
-        if psf_map is None:
-            psf_map, psf_pixel = mq, pix
-        res.append({"pixel": pix, "x": float(X[pix]), "y": float(Y[pix]),
+        psf_maps.append(mq)
+        psf_pixels.append(int(pix))
+        res.append({"pixel": int(pix), "x": float(X[pix]), "y": float(Y[pix]),
                     "fwhm_probe_pitch": fwhm_from_map(mq, npix, pix)})
     resolution = max(r["fwhm_probe_pitch"] for r in res)
 
@@ -212,8 +212,13 @@ def run(ds, tau=C.TAU, npix=None):
         "delta95": delta95,
         "eta_sensitivity": sens,
         "resolution_tests": res,
-        "psf_map": psf_map.tolist(),
-        "psf_pixel": int(psf_pixel),
+        "psf_maps": [m_.tolist() for m_ in psf_maps],
+        "psf_pixels": psf_pixels,
+        "singular_values": np.linalg.svd(A, compute_uv=False).tolist(),
+        "sigma_per_channel": sigma_j.tolist(),
+        "d_measured": dbar.tolist(),
+        "d_predicted": (A @ m).tolist(),
+        "residual_vector": (dbar - A @ m).tolist(),
         "noise_maxima": maxima.tolist(),
         "tau": tau,
         "a_plus_delta95": amp + delta95,

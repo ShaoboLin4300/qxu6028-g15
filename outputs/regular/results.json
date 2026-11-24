@@ -2,7 +2,7 @@
   "schema_version": "QXU6028-results-v1",
   "group": "G15",
   "dataset_set": "regular",
-  "pipeline_commit": "f9dddcca409fc63956cc816bab4897951ca55374",
+  "pipeline_commit": "f3caf4b742f4d9de3365d6186032ab1505149f56",
   "L1": {
     "correction_factor": 2.640805517671494,
     "n_fermi_op_cm2": 380058515692.445,

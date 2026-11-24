@@ -13,10 +13,11 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 
 ROOT = Path(__file__).resolve().parent
-_SECTION = None
 FIG = ROOT / "figures" / "regular"
 OUT = ROOT / "docs" / "G15_QXU6028_Report.docx"
 
@@ -33,13 +34,16 @@ SYM = {
 
 # section heading prefix -> [(file, width_cm, figure number)]
 FIGURES = {
-    "2.": [("fig1_l1_sweep.png", 16.2, 1)],
-    "3.": [("fig2_l2_raw_repeats.png", 9.4, 2),
-           ("fig3_l2_model_fit.png", 8.4, 3),
-           ("fig4_l2_channels.png", 15.0, 4),
-           ("fig5_l2_ef_trajectory.png", 11.8, 5)],
-    "4.": [("fig6_l3_map.png", 16.2, 6),
-           ("fig7_l3_method.png", 16.2, 7)],
+    1: ("fig1_l1_sweep.png", 16.2),
+    2: ("fig2_l2_raw_repeats.png", 9.0),
+    3: ("fig3_l2_model_fit.png", 7.2),
+    4: ("fig4_l2_channels.png", 15.2),
+    5: ("fig5_l2_ef_trajectory.png", 11.6),
+    6: ("fig6_l2_bootstrap.png", 15.2),
+    7: ("fig7_l3_map.png", 15.2),
+    8: ("fig8_l3_method.png", 13.0),
+    9: ("fig9_l3_resolution.png", 10.6),
+    10: ("fig10_l3_forward.png", 11.0),
 }
 
 
@@ -148,7 +152,23 @@ def add_paragraph(doc, text, style=None):
     return par
 
 
+def _rule(cell, edge, size):
+    """Add one horizontal rule to a cell (three-line table)."""
+    tcPr = cell._tc.get_or_add_tcPr()
+    borders = tcPr.find(qn("w:tcBorders"))
+    if borders is None:
+        borders = OxmlElement("w:tcBorders")
+        tcPr.append(borders)
+    el = OxmlElement("w:" + edge)
+    el.set(qn("w:val"), "single")
+    el.set(qn("w:sz"), str(size))
+    el.set(qn("w:space"), "0")
+    el.set(qn("w:color"), "000000")
+    borders.append(el)
+
+
 def add_table(doc, rows):
+    """Three-line table: top rule, header rule, bottom rule, nothing else."""
     cells = []
     for row in rows:
         parts = [c.strip() for c in row.strip().strip("|").split("|")]
@@ -158,19 +178,57 @@ def add_table(doc, rows):
     if not cells:
         return
     ncol = max(len(r) for r in cells)
+
+    def _numeric(txt):
+        txt = txt.replace("−", "-")
+        return bool(re.fullmatch(r"[-+()0-9.,eE\u00d7\s%\u2013]*", txt)) and any(c.isdigit() for c in txt)
+
+    centre = []
+    for j in range(ncol):
+        col = [r[j] for r in cells[1:] if j < len(r)]
+        centre.append(bool(col) and all(_numeric(v) for v in col))
+
     table = doc.add_table(rows=len(cells), cols=ncol)
-    table.style = "Table Grid"
+    table.autofit = True
+
+    # no vertical rules and no inner horizontal rules
+    tblPr = table._tbl.tblPr
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        el = OxmlElement("w:" + edge)
+        el.set(qn("w:val"), "none")
+        el.set(qn("w:sz"), "0")
+        el.set(qn("w:space"), "0")
+        el.set(qn("w:color"), "auto")
+        borders.append(el)
+    tblPr.append(borders)
+
     for i, row in enumerate(cells):
+        # keep the table on one page: no row splitting, and every row but the
+        # last stays with the next one
+        trPr = table.rows[i]._tr.get_or_add_trPr()
+        trPr.append(OxmlElement("w:cantSplit"))
         for j in range(ncol):
             cell = table.cell(i, j)
             cell.text = ""
             par = cell.paragraphs[0]
-            par.paragraph_format.space_after = Pt(2)
+            par.paragraph_format.space_before = Pt(3)
+            par.paragraph_format.space_after = Pt(3)
+            par.alignment = (WD_ALIGN_PARAGRAPH.CENTER if centre[j]
+                             else WD_ALIGN_PARAGRAPH.LEFT)
             fill_paragraph(par, row[j] if j < len(row) else "")
             for r in par.runs:
                 r.font.size = Pt(8.5)
                 if i == 0:
                     r.bold = True
+            if i == 0:
+                _rule(cell, "top", 12)
+                _rule(cell, "bottom", 6)
+            if i == len(cells) - 1:
+                _rule(cell, "bottom", 12)
+            else:
+                par.paragraph_format.keep_with_next = True
+
     doc.add_paragraph().paragraph_format.space_after = Pt(2)
 
 
@@ -181,27 +239,26 @@ def parse_captions(text):
     return caps
 
 
-def flush_figures(doc, captions):
-    """Emit the figures belonging to the section that has just ended."""
-    global _SECTION
-    figs = FIGURES.get(_SECTION)
-    if not figs:
-        return
-    for f, width, fignum in figs:
+def insert_figures(doc, nums, captions):
+    """Insert the requested figures, each with its caption, in place."""
+    for num in nums:
+        if num not in FIGURES:
+            continue
+        fname, width = FIGURES[num]
         pic = doc.add_paragraph()
         pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
         pic.paragraph_format.space_before = Pt(8)
         pic.paragraph_format.space_after = Pt(2)
         pic.paragraph_format.keep_with_next = True
-        pic.add_run().add_picture(str(FIG / f), width=Cm(width))
+        pic.add_run().add_picture(str(FIG / fname), width=Cm(width))
         cap = doc.add_paragraph()
         cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         cap.paragraph_format.space_after = Pt(8)
-        fill_paragraph(cap, captions.get(fignum, ""))
+        fill_paragraph(cap, captions.get(num, ""))
         for r in cap.runs:
             r.font.size = Pt(8.5)
             r.italic = True
-    FIGURES[_SECTION] = []
+
 
 def build():
     md = (ROOT / "docs" / "report.md").read_text(encoding="utf-8")
@@ -257,6 +314,9 @@ def build():
             add_table(doc, value)
             continue
         block = value
+        if block.startswith("[[fig:") and block.endswith("]]"):
+            insert_figures(doc, [int(x) for x in block[6:-2].split(",")], captions)
+            continue
         if block.startswith("# ") and not title_done:
             p = doc.add_paragraph()
             r = p.add_run(block[2:].strip())
@@ -282,10 +342,7 @@ def build():
         if block.startswith("## "):
             heading = block[3:].strip()
             if heading.startswith("Figure captions"):
-                flush_figures(doc, captions)
                 break
-            # figures sit at the END of the section that refers to them
-            flush_figures(doc, captions)
             h = doc.add_paragraph()
             hr = h.add_run(heading)
             hr.bold = True
@@ -293,8 +350,6 @@ def build():
             h.paragraph_format.space_before = Pt(12)
             h.paragraph_format.space_after = Pt(4)
             h.paragraph_format.keep_with_next = True
-            global _SECTION
-            _SECTION = next((k for k in FIGURES if heading.startswith(k)), None)
             continue
         if re.match(r"^\d+\.\s", block):
             add_paragraph(doc, re.sub(r"^\d+\.\s+", "", block), style="List Number")

@@ -145,8 +145,11 @@ def run_dataset(name, log):
     figures.l2_model_fit({**d2, **r2}, fig_dir / "fig3_l2_model_fit.png")
     figures.l2_channels({**d2, **r2}, fig_dir / "fig4_l2_channels.png")
     figures.l2_trajectory({**d2, **r2}, fig_dir / "fig5_l2_ef_trajectory.png")
-    figures.l3_map({**d3, **r3}, fig_dir / "fig6_l3_map.png")
-    figures.l3_method({**d3, **r3}, fig_dir / "fig7_l3_method.png")
+    figures.l2_bootstrap({**d2, **r2}, fig_dir / "fig6_l2_bootstrap.png")
+    figures.l3_map({**d3, **r3}, fig_dir / "fig7_l3_map.png")
+    figures.l3_method({**d3, **r3}, fig_dir / "fig8_l3_method.png")
+    figures.l3_resolution({**d3, **r3}, fig_dir / "fig9_l3_resolution.png")
+    figures.l3_forward({**d3, **r3}, fig_dir / "fig10_l3_forward.png")
     log.append(f"figures written to {fig_dir}")
 
     return results
