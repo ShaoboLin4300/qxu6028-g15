@@ -31,10 +31,19 @@ QMplus point.
 2. **Complete the AI usage log.** The last section of `docs/ai_usage_log.md` is
    deliberately empty: add any AI use from the three live sessions that is not
    already listed. Undisclosed use is treated as academic misconduct.
-3. **Publish the repository.** Create a GitHub or Gitee repository that the
-   markers can open, push all branches and the full history, and put the link in
-   the report. Keep the repository visible and unchanged until marks are
-   confirmed.
+3. **Publish the repository.** Create a public GitHub (or Gitee) repository named
+   e.g. `qxu6028-g15`, then from this folder:
+   ```bash
+   git remote add origin https://github.com/<account>/qxu6028-g15.git
+   git push -u origin main
+   ```
+   The branch is `main` and the history is already committed. Requirements to
+   satisfy: the link opens for someone who is not logged in; the full commit
+   history is visible; `reproduce.py` is at the top level. Put the link in the
+   report title block and in the QMplus submission box. Keep it public and
+   unchanged until marks are confirmed.
+   Each member should also add their own row to `CONTRIBUTORS.md` and commit it
+   under their own git identity, so the history shows distributed work.
 4. **Agree and sign the contribution statement.** Replace the four placeholder
    rows, delete rows you do not need, make every evidence cell point at
    something a marker can open, then sign and export to PDF.
