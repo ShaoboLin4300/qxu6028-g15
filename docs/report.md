@@ -94,7 +94,7 @@ raw repeats in acquisition order, with the pair of indices bracketing the $R_H$
 sign change marked. $R_H$ and $R_s$ were normalised *separately*, each by its own
 maximum, and the sign of $R_H$ was preserved. Separate normalisation matters: the channels differ tenfold, so a shared scale
 would let $R_s$ dominate and hide the Hall sign. A
-library of normalised curves was built once — an ideal cone $g=c|E|$ and
+library of normalised curves [2] was built once — an ideal cone $g=c|E|$ and
 symmetric hard-gap models $g=c(|E|-E_g/2)$ outside $|E|\le E_g/2$, with
 $E_g/k_BT$ from 0.50 to 8.00 in steps of 0.25, on 400 candidate Fermi levels from
 $-8\,k_BT$ to $+9\,k_BT$. Each pair was assigned the nearest point on each curve in the normalised
@@ -175,7 +175,7 @@ alone.
 **Question.** Where is the Hall-conductivity non-uniformity, what can the probe
 resolve, and does the wafer pass the announced specification?
 
-**Method.** The forward matrix is $128\times100$ with rank 92, and every row sums
+**Method.** The forward matrix [3] is $128\times100$ with rank 92, and every row sums
 to less than $10^{-15}$, so a uniform offset is invisible to the probe and the
 map must be constrained to zero mean. The rank is 92 rather than 100: eight directions are unconstrained, and the
 near-null modes are flat, so a direct inverse amplifies them into a spurious
