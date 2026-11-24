@@ -34,17 +34,18 @@ SYM = {
 
 # section heading prefix -> [(file, width_cm, figure number)]
 FIGURES = {
-    1: ("fig1_l1_sweep.png", 16.2),
-    2: ("fig2_l2_raw_repeats.png", 9.0),
-    3: ("fig3_l2_library.png", 15.0),
-    4: ("fig4_l2_model_fit.png", 7.4),
-    5: ("fig5_l2_channels.png", 15.2),
-    6: ("fig6_l2_ef_trajectory.png", 11.6),
-    7: ("fig7_l2_bootstrap.png", 15.2),
-    8: ("fig8_l3_map.png", 15.2),
-    9: ("fig9_l3_method.png", 13.2),
-    10: ("fig10_l3_resolution.png", 10.6),
-    11: ("fig11_l3_forward.png", 11.0),
+    1: ("fig1_l1_sweep.png", 14.3),
+    2: ("fig2_l2_raw_repeats.png", 7.9),
+    3: ("fig3_l2_library.png", 11.6),
+    4: ("fig4_l2_model_fit.png", 6.5),
+    5: ("fig5_l2_channels.png", 13.4),
+    6: ("fig6_l2_ef_trajectory.png", 9.8),
+    7: ("fig7_l2_bootstrap.png", 12.6),
+    8: ("fig8_l3_map.png", 13.4),
+    9: ("fig9_l3_method.png", 11.6),
+    10: ("fig10_l3_resolution.png", 9.3),
+    11: ("fig11_l3_forward.png", 9.7),
+    12: ("fig12_blind_transfer.png", 11.9),
 }
 
 
@@ -142,7 +143,7 @@ def fill_paragraph(par, text):
 
 def add_paragraph(doc, text, style=None):
     par = doc.add_paragraph(style=style)
-    par.paragraph_format.space_after = Pt(6)
+    par.paragraph_format.space_after = Pt(3) if style == "List Number" else Pt(6)
     par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     fill_paragraph(par, text)
     if re.match(r"^\*\*Table \d+", text):

@@ -171,6 +171,17 @@ def main(argv=None):
         res = run_dataset(name, log)
         written.append((name, res))
 
+    # figure that needs both datasets: the blind run beside the regular one
+    reg_p = DATASETS["regular"]["out"] / "diagnostics.json"
+    blind_p = DATASETS["blind"]["out"] / "diagnostics.json"
+    if reg_p.exists() and blind_p.exists():
+        reg_d = json.loads(reg_p.read_text(encoding="utf-8"))
+        bl_d = json.loads(blind_p.read_text(encoding="utf-8"))
+        for ds in ("regular", "blind"):
+            figures.blind_transfer(reg_d, bl_d,
+                                   ROOT / "figures" / ds / "fig12_blind_transfer.png")
+        log.append("cross-dataset figure written to figures/{regular,blind}/fig12_blind_transfer.png")
+
     text = "\n".join(log)
     print(text)
     for name in names:

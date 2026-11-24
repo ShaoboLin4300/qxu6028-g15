@@ -12,11 +12,11 @@ QMplus point.
 - [x] `outputs/regular/results.json` and `outputs/blind/results.json` match the
       supplied schema exactly (`validate_schema` asserts keys, nesting, list
       lengths and finiteness on every run).
-- [x] Eleven figures per dataset in `figures/regular/` and `figures/blind/`,
+- [x] Twelve figures per dataset in `figures/regular/` and `figures/blind/`,
       and four three-line data tables (L1 checks, L2 model comparison, L3 features,
       regular vs blind).
-- [x] `docs/report.md` and `docs/G15_QXU6028_Report.docx` 鈥?body 2,244 words
-      (limit 2,500), Transfer 167 words (limit 200), figure captions 252 words.
+- [x] `docs/report.md` and `docs/G15_QXU6028_Report.docx` 鈥?body 2,222 words
+      (limit 2,500), Transfer 167 words (limit 200), figure captions 271 words.
 - [x] `docs/self_assessment.md` 鈥?184 words (required 150鈥?00).
 - [x] `docs/ai_error_ledger.md` 鈥?four entries, two of them physics.
 - [x] `docs/ai_usage_log.md` 鈥?tools, purposes, extent, verification.

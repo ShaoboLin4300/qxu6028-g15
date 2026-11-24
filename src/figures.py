@@ -368,6 +368,49 @@ def l2_bootstrap(d, path):
 
 
 # ---------------------------------------------------------------- L3
+def blind_transfer(reg, blind, path):
+    """Regular and blind runs side by side: the same pipeline, the same verdict."""
+    fig, ax = plt.subplots(1, 2, figsize=(10.4, 3.8), constrained_layout=True)
+
+    m = np.asarray(blind["L3"]["map_2d"])
+    ext = [-3.0, 3.0, -3.0, 3.0]
+    im = ax[0].imshow(m, origin="lower", extent=ext, cmap="RdBu_r",
+                      vmin=-np.max(np.abs(m)), vmax=np.max(np.abs(m)),
+                      interpolation="nearest")
+    cb = fig.colorbar(im, ax=ax[0], pad=0.02, fraction=0.046)
+    cb.set_label(r"$\hat m$ (rel. conductivity)", fontsize=7.5)
+    cb.ax.tick_params(labelsize=7)
+    for key, mark in (("argmax_pixel", "^"), ("argmin_pixel", "v")):
+        p = blind["L3"][key]
+        ax[0].plot(p["x"], p["y"], mark, color="k", ms=7)
+        off = (10, 4) if p["x"] < 0 else (-44, 4)
+        ax[0].annotate(f"{p['value']*100:+.2f}%", (p["x"], p["y"]),
+                       textcoords="offset points", xytext=off, fontsize=7)
+    ax[0].set_xlabel("x (probe pitches)")
+    ax[0].set_ylabel("y (probe pitches)")
+    ax[0].grid(False)
+    ax[0].set_xticks([-3, -1.5, 0, 1.5, 3])
+    ax[0].set_yticks([-3, -1.5, 0, 1.5, 3])
+    ax[0].set_title(f"(a) blind map, max$|m|$={blind['L3']['max_abs_map']*100:.2f}%, "
+                    f"{blind['L3']['decision'].split('(')[0].strip()}")
+
+    for d, lab, ls, col in ((reg, "regular", "-", BLUE),
+                            (blind, "blind", "--", ORANGE)):
+        eg = np.concatenate([[0.0], np.asarray(d["L2"]["residual_by_gap_kT"])])
+        rr = np.concatenate([[d["L2"]["residual_cone"]],
+                             np.asarray(d["L2"]["residual_by_gap"])])
+        ax[1].plot(eg, rr, ls, marker="o", ms=2.6, lw=1.3, color=col,
+                   label=f"{lab}: r_cone={d['L2']['residual_cone']:.4f}")
+    ax[1].set_xlabel(r"$E_g/k_BT$")
+    ax[1].set_ylabel("rms residual")
+    ax[1].set_title("(b) the same model decision on both datasets")
+    ax[1].legend(loc="lower right", handlelength=1.6)
+    _clean(ax[1])
+
+    fig.suptitle("Blind test: the frozen pipeline applied to fresh data", fontsize=10.5)
+    return _save(fig, path)
+
+
 def l3_map(d, path):
     m = np.asarray(d["map_2d"])
     ml = np.asarray(d["map_localised"]).reshape(m.shape)

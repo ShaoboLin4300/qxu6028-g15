@@ -1,4 +1,4 @@
-QXU6028 reproduce.py | commit f6eb562665b698fe606bf87efad557aaebbe61b5
+QXU6028 reproduce.py | commit fa77887c13f79f33ca380e484accee0686947c94
 python 3.12.14 | numpy 2.3.5
 
 === dataset: regular | D:\deepseek harness工作区\qxu6028_g15\data\regular_G15 ===
@@ -14,3 +14,4 @@ L1 gates: 0.000 eV -> 1.0000 (target 1.0), 0.073 eV -> 2.0049 (target 2.0), 0.10
 L2 model=cone Eg=0.000 kT unc=[0.0, 0.0] n_traj=45 r_cone=0.013271 r_gap=0.017427 gap_fraction=0.000
 L3 max|m|=0.044173 delta95=3.251e-05 eta0=1.331e-03 resolution=1.444 pitch decision=CLEAR FAIL
 figures written to D:\deepseek harness工作区\qxu6028_g15\figures\blind
+cross-dataset figure written to figures/{regular,blind}/fig12_blind_transfer.png

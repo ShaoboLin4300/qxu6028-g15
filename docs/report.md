@@ -50,25 +50,12 @@ point $C = 2.6408$, so $n_F = 3.801\times10^{11}$ cm$^{-2}$ against the
 band-edge $1.004\times10^{12}$ cm$^{-2}$, and the mobility rises from
 $2.403\times10^4$ to $6.346\times10^4$ cm$^2$ V$^{-1}$ s$^{-1}$ at $\rho = 258.8\ \Omega/\square$.
 
-**Table 1.** L1 checks and the operating point. The check column reproduces the values issued with the data.
-
-| $E_F$ (eV) | $n_{\rm band}/n_F$ | check | role |
-|---|---|---|---|
-| 0.000 | 1.0000 | 1.00 | neutrality: both limits coincide |
-| 0.073 | 2.0049 | 2.00 | the $C=2$ crossing |
-| 0.100 | 2.5988 | 2.60 | mid-sweep check |
-| 0.200 | 5.1044 | 5.10 | high doping |
-| 0.1018 | 2.6408 | – | reported operating point |
-
-[[fig:1]]
-
 **Why the factor grows.** Raising $E_F$ excludes an ever larger slice of
 occupied states between the Dirac point and $E_F$. At neutrality the two limits
 coincide and the factor is exactly one; as $E_F$ rises the excluded population
-grows, so $C$ rises monotonically and without bound in the degenerate limit. The
-ratio is independent of the DoS slope $c$, because $c$ multiplies both
-integrals — a useful invariance, and a check that the two integrals are
-otherwise identical.
+grows, so $C$ rises monotonically. The ratio is
+independent of the DoS slope $c$, which multiplies both integrals — a useful
+invariance check.
 
 **Uncertainty and checks.** Recomputing the band-edge column from the metadata
 reproduces the supplied column to $4\times10^{-12}$ relative. Truncating the
@@ -83,6 +70,18 @@ band-edge counts would therefore under-predict the change in signal for a given
 change in sheet resistance by the same factor. This holds only while the
 linear-DoS, single-band picture holds; a gapped or disordered DoS breaks the
 proportionality and the factor must be re-derived.
+
+**Table 1.** L1 checks and the operating point. The check column reproduces the values issued with the data.
+
+| $E_F$ (eV) | $n_{\rm band}/n_F$ | check | role |
+|---|---|---|---|
+| 0.000 | 1.0000 | 1.00 | neutrality: both limits coincide |
+| 0.073 | 2.0049 | 2.00 | the $C=2$ crossing |
+| 0.100 | 2.5988 | 2.60 | mid-sweep check |
+| 0.200 | 5.1044 | 5.10 | high doping |
+| 0.1018 | 2.6408 | – | reported operating point |
+
+[[fig:1]]
 
 ## 3. L2 — gapless cone or hard gap
 
@@ -103,7 +102,7 @@ $(R_H,R_s)$ plane; Figure 3 shows the library and Figure 4 the resulting fit. Th
 gap is claimed only when $r_{\rm gap} < 0.85\,r_{\rm cone}$ *and*
 $E_g \ge 1\,k_BT$.
 
-[[fig:2]]
+
 
 
 **Result.** The cone wins on both counts. The cone residual is
@@ -114,10 +113,14 @@ zero at index 12, exactly where the measured $R_H$ changes sign. The chosen mode
 is therefore *cone*, $E_g=0$, and none of the 200 bootstrap replicates selected a
 hard gap. The bootstrap confirms it: every replicate reselects the cone (Figure 7).
 
-[[fig:3]]
+[[fig:2]]
+
+
+
 
 
 **Table 2.** Model comparison in the normalised pair space. The hard-gap entry is the best of 31 candidates; selection needs a 15 % improvement over the cone and $E_g \ge 1\,k_BT$.
+
 
 | model | $E_g/k_BT$ | rms residual | ratio to cone | decision |
 |---|---|---|---|---|
@@ -131,25 +134,38 @@ measurement is largest where the sign changes (Figure 5c) — exactly where a ga
 would have to earn its improvement. The cone already reproduces the peak width; a gap
 would cost a 26 % larger residual.
 
-[[fig:4,5]]
+[[fig:3]]
+
+
+
 
 **Uncertainty.** The bootstrap resamples one of the three repeats per index and
 refits with the same library and rule, giving a median $E_F$ band half-width of
 1.6 meV and a worst-case half-width of 14.9 meV near the end of the sweep; the
-gap interval is $[0,0]$ $k_BT$ because no replicate selected one. The intervals
-describe stability against the observed scatter, not against model error: three
-repeats cannot rule out a systematic mis-modelling of the series. And a
+gap interval is $[0,0]$ $k_BT$ because no replicate selected one. The intervals describe stability against scatter, not model error: three repeats
+cannot rule out systematic mis-modelling. And a
 sub-thermal gap, $E_g<k_BT$, is indistinguishable from no gap at 300 K, because
 the Fermi window smooths it away; the data cannot exclude one.
 
+[[fig:4]]
+
+
+
 **Device recommendation.** A gapless, symmetric cone with
 $\mu\sim10^4$–$10^5$ cm$^2$ V$^{-1}$ s$^{-1}$ and a Fermi level that can be moved
-by 0.22 eV is a semimetal, not a switch. It is well suited to a transparent
-conductor, an interconnect or a carrier-density sensor, where a high, weakly
+by 0.22 eV is a semimetal, not a switch. It suits a transparent conductor, an
+interconnect or a carrier-density sensor, where a high, weakly
 temperature-dependent conductivity is an asset. It is a poor choice for a
 switching device, because it has no thermally off state: the residual carrier
 population at the Dirac point is set by $k_BT$ and cannot be removed by gating
 alone.
+
+[[fig:5]]
+
+
+
+
+
 
 
 
@@ -177,6 +193,10 @@ and solver; the positive-lobe width gives FWHM $=2.355\sigma$. The detection lim
 500 noise-only vectors drawn from the channel-wise repeat standard deviation and
 propagated through the same solver (Figure 9).
 
+[[fig:8]]
+
+
+
 
 **Result.** The reconstruction reproduces the measured scan to within the visible linewidth
 (Figure 11a); the residuals are discussed below. The zero-mean map has $\max|\hat m| = 3.58\,\%$ of the reference
@@ -192,7 +212,10 @@ point-spread function is a single-pixel cross (Figure 10a). The noise-only
 ensemble gives $\delta_{95}=3.2\times10^{-6}$, i.e. $0.0003\,\%$ of the
 reference conductivity (Figure 9d).
 
-[[fig:8,9]]
+[[fig:9]]
+
+
+
 
 **Table 3.** Merged features of the plane-removed map, in probe pitches and as a fraction of the reference conductivity. Neighbouring pixels are merged into one feature.
 
@@ -215,7 +238,9 @@ term alone reaches 3.31 % at the corners, above the threshold on its own, so the
 specification is violated by the wafer-scale term independently of what the
 defects do.
 
-[[fig:10,11]]
+
+
+
 
 
 **Uncertainty and limits.** The regularisation scan (Figure 9a) is the crucial
@@ -230,6 +255,10 @@ $0.01\eta_0$ the misfit falls to $1.5$ times the noise and the amplitude moves b
 but it deliberately does not claim structures finer than 1.44 pitches, and the
 tilt/localised decomposition is a descriptive device, not a model fitted by
 maximum likelihood.
+
+[[fig:10,11]]
+
+
 
 ## 5. Transfer: a printed polymer OFET
 
@@ -271,6 +300,10 @@ caused by a wafer-scale gradient of 3.31 % rather than by local defects
 | resolution (pitch) | 1.44 | 1.44 |
 | decision | fail | fail |
 
+[[fig:12]]
+
+
+
 The main limitation is that none of these conclusions is checked against an
 independent truth: the model class, the regularisation strength and the noise
 estimate are all inferred from the same data they are used to interpret. The blind run of the identical pipeline (Table 4) is evidence that the method
@@ -307,3 +340,5 @@ transfers to fresh data, not evidence that it is correct.
 **Figure 10.** L3 resolution: point-spread function after injecting a single pixel at the centre (a) and off-centre (b), with the corresponding cross-sections (c, d).
 
 **Figure 11.** L3 forward check: (a) measured and reconstructed readings, (b) residual against the $\pm3\sigma_j$ band.
+
+**Figure 12.** Blind test: (a) the map reconstructed from the fresh dataset, (b) the gap-size scan for both datasets.
