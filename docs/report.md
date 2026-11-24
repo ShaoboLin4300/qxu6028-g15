@@ -1,8 +1,8 @@
-# What a wafer is really like: extraction scale, density-of-states class and spatial uniformity from simulated transport
+# Carrier counting, density-of-states inversion and uniformity mapping of a simulated graphene-on-sapphire wafer
 
 **QXU6028 Polymer Devices — virtual-laboratory group coursework, AY 2026–27**
 Group G15 · Lin Shaobo 2023304300 · Miao Shize 2023304317 · Wang Yuzhe 2023304283 · Xu Wenjie 2023304282
-Repository: https://github.com/ShaoboLin4300/qxu6028-g15 · Commit that produced these numbers: see `outputs/regular/results.json → pipeline_commit`.
+Repository: https://github.com/ShaoboLin4300/qxu6028-g15 · Regenerate every number and figure with `python reproduce.py`; the producing commit is recorded in `outputs/regular/results.json`.
 
 ---
 

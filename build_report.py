@@ -14,6 +14,7 @@ from pathlib import Path
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
@@ -296,6 +297,47 @@ def add_footer(section):
     f2.font.color.rgb = RGBColor(0x60, 0x60, 0x60)
 
 
+
+def _bottom_rule(par, size=6, color="9a9a9a"):
+    """Thin rule under a paragraph, used to close the title block."""
+    pPr = par._p.get_or_add_pPr()
+    borders = OxmlElement("w:pBdr")
+    bottom = OxmlElement("w:bottom")
+    bottom.set(qn("w:val"), "single")
+    bottom.set(qn("w:sz"), str(size))
+    bottom.set(qn("w:space"), "6")
+    bottom.set(qn("w:color"), color)
+    borders.append(bottom)
+    pPr.append(borders)
+
+
+
+def add_hyperlink(paragraph, url, text, size=9, color="1a355e"):
+    """Insert a real, clickable hyperlink run."""
+    part = paragraph.part
+    r_id = part.relate_to(url, RT.HYPERLINK, is_external=True)
+    link = OxmlElement("w:hyperlink")
+    link.set(qn("r:id"), r_id)
+    run = OxmlElement("w:r")
+    rPr = OxmlElement("w:rPr")
+    rFonts = OxmlElement("w:rFonts")
+    rFonts.set(qn("w:ascii"), FONT)
+    rFonts.set(qn("w:hAnsi"), FONT)
+    rPr.append(rFonts)
+    sz = OxmlElement("w:sz")
+    sz.set(qn("w:val"), str(int(size * 2)))
+    rPr.append(sz)
+    col = OxmlElement("w:color")
+    col.set(qn("w:val"), color)
+    rPr.append(col)
+    run.append(rPr)
+    t = OxmlElement("w:t")
+    t.text = text
+    run.append(t)
+    link.append(run)
+    paragraph._p.append(link)
+
+
 def parse_captions(text):
     caps = {}
     for m in re.finditer(r"\*\*Figure (\d+)\.\*\*(.+?)(?=\n\n|\Z)", text, re.S):
@@ -397,11 +439,18 @@ def build():
             p = doc.add_paragraph()
             r = p.add_run(block[2:].strip())
             r.bold = True
-            r.font.size = Pt(16)
+            r.font.size = Pt(15)
             p.paragraph_format.space_after = Pt(10)
             title_done = True
             continue
-        if block.startswith("**QXU6028") or block.startswith("Group G15"):
+        if block.startswith("**QXU6028"):
+            p = doc.add_paragraph()
+            r = p.add_run(re.sub(r"[*]", "", block))
+            r.font.size = Pt(9.5)
+            r.font.color.rgb = RGBColor(0x40, 0x40, 0x40)
+            p.paragraph_format.space_after = Pt(2)
+            continue
+        if block.startswith("Group G15"):
             p = doc.add_paragraph()
             text = re.sub(r"[*]", "", block)
             parts = text.split(" · ")
@@ -419,10 +468,26 @@ def build():
             p.paragraph_format.space_after = Pt(2)
             continue
         if block.startswith("Repository:"):
+            text = re.sub(r"[*`]", "", block)
+            parts = text.split(" · ", 1)
             p = doc.add_paragraph()
-            p.paragraph_format.space_after = Pt(10)
-            r = p.add_run(re.sub(r"[*`]", "", block))
+            p.paragraph_format.space_after = Pt(0)
+            label = "Repository: "
+            url = parts[0][len(label):].strip()
+            r = p.add_run(label)
             r.font.size = Pt(9)
+            r.font.color.rgb = RGBColor(0x40, 0x40, 0x40)
+            add_hyperlink(p, url, url, size=9)
+            if len(parts) > 1:
+                p2 = doc.add_paragraph()
+                p2.paragraph_format.space_after = Pt(12)
+                r2 = p2.add_run(parts[1])
+                r2.font.size = Pt(8.5)
+                r2.font.color.rgb = RGBColor(0x50, 0x50, 0x50)
+                _bottom_rule(p2)
+            else:
+                p.paragraph_format.space_after = Pt(12)
+                _bottom_rule(p)
             continue
         if block.startswith("---"):
             continue
