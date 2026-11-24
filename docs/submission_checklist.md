@@ -15,7 +15,7 @@ QMplus point.
 - [x] Twelve figures per dataset in `figures/regular/` and `figures/blind/`,
       and four three-line data tables (L1 checks, L2 model comparison, L3 features,
       regular vs blind).
-- [x] `docs/report.md` and `docs/G15_QXU6028_Report.docx` 鈥?body 2,222 words
+- [x] `docs/report.md` and `docs/G15_QXU6028_Report.docx` 鈥?body 2,227 words
       (limit 2,500), Transfer 167 words (limit 200), figure captions 271 words.
 - [x] `docs/self_assessment.md` 鈥?184 words (required 150鈥?00).
 - [x] `docs/ai_error_ledger.md` 鈥?four entries, two of them physics.

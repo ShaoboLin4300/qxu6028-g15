@@ -9,7 +9,7 @@ Repository: *[GitHub/Gitee link]* · Commit that produced these numbers: see `ou
 ## 1. Context and question
 
 A characterisation team is given sheet-resistance and Hall data from a simulated
-graphene-on-sapphire wafer [4] and has to answer three questions that a customer
+graphene-on-sapphire wafer [1] and has to answer three questions that a customer
 would actually ask. First, what carrier density and mobility does the wafer
 have, given that the datasheet used a textbook band-edge count. Second, is the
 material gapless or gapped, and how far did the Fermi level drift while the
@@ -39,7 +39,7 @@ Both integrals were evaluated on 20 001 points with the trapezoidal rule and
 cross-checked against the closed form
 $n_F = N_Ac k_BT\,[E_F\ln 2 + (\pi^2/12)k_BT]$, which agree to $4\times10^{-7}$.
 The correction factor $C=n_{\rm band}/n_F$ follows, and because
-$\mu = 1/(e n \rho)$ [1] at a fixed sheet resistivity, $\mu_F = C\,\mu_B$: the same
+$\mu = 1/(e n \rho)$ [2] at a fixed sheet resistivity, $\mu_F = C\,\mu_B$: the same
 factor multiplies the mobility. The operating point $E_{F,\rm op}=0.101816$ eV
 was taken from `L1_params.json`, not from the nearest row of the sweep.
 
@@ -75,7 +75,7 @@ proportionality and the factor must be re-derived.
 
 | $E_F$ (eV) | $n_{\rm band}/n_F$ | check | role |
 |---|---|---|---|
-| 0.000 | 1.0000 | 1.00 | neutrality: both limits coincide |
+| 0.000 | 1.0000 | 1.00 | neutrality: limits coincide |
 | 0.073 | 2.0049 | 2.00 | the $C=2$ crossing |
 | 0.100 | 2.5988 | 2.60 | mid-sweep check |
 | 0.200 | 5.1044 | 5.10 | high doping |
@@ -94,7 +94,7 @@ raw repeats in acquisition order, with the pair of indices bracketing the $R_H$
 sign change marked. $R_H$ and $R_s$ were normalised *separately*, each by its own
 maximum, and the sign of $R_H$ was preserved. Separate normalisation matters: the channels differ tenfold, so a shared scale
 would let $R_s$ dominate and hide the Hall sign. A
-library of normalised curves [2] was built once — an ideal cone $g=c|E|$ and
+library of normalised curves [3] was built once — an ideal cone $g=c|E|$ and
 symmetric hard-gap models $g=c(|E|-E_g/2)$ outside $|E|\le E_g/2$, with
 $E_g/k_BT$ from 0.50 to 8.00 in steps of 0.25, on 400 candidate Fermi levels from
 $-8\,k_BT$ to $+9\,k_BT$. Each pair was assigned the nearest point on each curve in the normalised
@@ -175,7 +175,7 @@ alone.
 **Question.** Where is the Hall-conductivity non-uniformity, what can the probe
 resolve, and does the wafer pass the announced specification?
 
-**Method.** The forward matrix [3] is $128\times100$ with rank 92, and every row sums
+**Method.** The forward matrix [4] is $128\times100$ with rank 92, and every row sums
 to less than $10^{-15}$, so a uniform offset is invisible to the probe and the
 map must be constrained to zero mean. The rank is 92 rather than 100: eight directions are unconstrained, and the
 near-null modes are flat, so a direct inverse amplifies them into a spurious
@@ -189,7 +189,7 @@ connected components of the same-sign pixels above 30 % of the residual
 amplitude, with neighbouring pixels merged rather than reported individually.
 Resolution comes from injecting a zero-mean single-pixel feature (centre and
 off-centre), forward-projecting with $A$ and reconstructing with the same $\eta$
-and solver; the positive-lobe width gives FWHM $=2.355\sigma$. The detection limit comes from
+and solver; the positive-lobe width gives FWHM $= 2.355\sigma$. The detection limit comes from
 500 noise-only vectors drawn from the channel-wise repeat standard deviation and
 propagated through the same solver (Figure 9).
 
@@ -266,7 +266,7 @@ A printed polymer OFET uses the same three inferences but changes each model.
 Its density of states is not a cone but a broadened distribution of
 hopping and trap states, so occupancy — and hence the gate-voltage response — is
 set by a Gaussian or exponential tail rather than by $k_BT$-wide thermal
-smearing. The mobility extracted from a transfer curve uses the same Chapter 3 [1]
+smearing. The mobility extracted from a transfer curve uses the same Chapter 3 [2]
 relation $\mu = 1/(en\rho)$, which is exactly why L1 matters: the carrier count
 $n$ must come from the gate-charge model $n = C_i(V_G-V_T)/e$, not from a
 band-edge integral, and contact resistance in series with the channel biases any
@@ -306,15 +306,15 @@ caused by a wafer-scale gradient of 3.31 % rather than by local defects
 
 The main limitation is that none of these conclusions is checked against an
 independent truth: the model class, the regularisation strength and the noise
-estimate are all inferred from the same data they are used to interpret. The blind run of the identical pipeline (Table 4) is evidence that the method
-transfers to fresh data, not evidence that it is correct.
+estimate are all inferred from the same data they are used to interpret. The blind run of the identical pipeline (Table 4, Figure 12) is evidence that the
+method transfers to fresh data, not evidence that it is correct.
 
 ## References
 
-[1] QXU6028 Chapter 3, *Carrier counting and mobility*, lecture notes, 2026–27.
-[2] QXU6028 Chapter 5, *Reading the density of states from transport*, lecture notes, 2026–27.
-[3] QXU6028 Chapter 6, *Probe measurements and uniformity*, lecture notes, 2026–27.
-[4] Novoselov, K. S. *et al.* (2004) 'Electric field effect in atomically thin carbon films', *Science*, 306(5696), pp. 666–669.
+[1] Novoselov, K. S. *et al.* (2004) 'Electric field effect in atomically thin carbon films', *Science*, 306(5696), pp. 666–669.
+[2] QXU6028 Chapter 3, *Carrier counting and mobility*, lecture notes, 2026–27.
+[3] QXU6028 Chapter 5, *Reading the density of states from transport*, lecture notes, 2026–27.
+[4] QXU6028 Chapter 6, *Probe measurements and uniformity*, lecture notes, 2026–27.
 [5] Hansen, P. C. (1992) 'Analysis of discrete ill-posed problems by means of the L-curve', *SIAM Review*, 34(4), pp. 561–580.
 
 ## Figure captions

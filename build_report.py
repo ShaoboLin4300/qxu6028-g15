@@ -21,15 +21,18 @@ ROOT = Path(__file__).resolve().parent
 FIG = ROOT / "figures" / "regular"
 OUT = ROOT / "docs" / "G15_QXU6028_Report.docx"
 FONT = "Times New Roman"
+# commands whose trailing space is a LaTeX separator, not content
+SPACERS = {r"\rm", r"\mathrm", r"\mathsf", r"\mathbf", r"\text",
+           r"\lVert", r"\rVert", r"\sqrt"}
 
 SYM = {
     r"\times": "×", r"\pm": "±", r"\approx": "≈", r"\ge": "≥", r"\le": "≤",
     r"\Omega": "Ω", r"\mu": "μ", r"\eta": "η", r"\delta": "δ", r"\rho": "ρ",
-    r"\pi": "π", r"\ln": "ln", r"\lVert": "‖", r"\rVert": "‖",
+    r"\pi": "π", r"\ln": "ln", r"\lVert": "||", r"\rVert": "||",
     r"\rightarrow": "→", r"\to": "→", r"\infty": "∞", r"\square": "□",
     r"\,": "\u2009", r"\;": "\u2009", r"\quad": "\u2003", r"\cdot": "·",
     r"\max": "max", r"\rm": "", r"\mathrm": "", r"\mathsf": "", r"\mathbf": "",
-    r"\text": "", r"\bar": "\u0304", r"\hat": "\u0302", r"\sqrt": "√",
+    r"\text": "", r"\min": "min", r"\exp": "exp", r"\bar": "\u0304", r"\hat": "\u0302", r"\sqrt": "√",
     r"\propto": "∝", r"\sigma": "σ", r"\sim": "~", r"\int": "∫",
 }
 
@@ -80,10 +83,23 @@ def emit_math(par, src, italic=True, sub=False, sup=False):
                     run.font.superscript = sup
                     i = j + (1 if nxt else 0)
                     continue
+                if cmd in (r"\max", r"\ln", r"\min", r"\exp"):
+                    flush()
+                    run = par.add_run(SYM.get(cmd, cmd[1:]))
+                    run.italic = False
+                    run.font.subscript = sub
+                    run.font.superscript = sup
+                    i += len(cmd)
+                    continue
                 repl = SYM.get(cmd)
                 if repl is not None:
                     buf.append(repl)
+                    if (cmd in SPACERS and i + len(cmd) < len(src)
+                            and src[i + len(cmd)] == " "):
+                        i += 1
                 i += len(cmd)
+                if repl == "" and i < len(src) and src[i] == " ":
+                    i += 1          # \rm band -> band, not " band"
                 continue
             nxt = src[i + 1] if i + 1 < len(src) else ""
             buf.append(SYM.get("\\" + nxt, nxt))
@@ -107,7 +123,7 @@ def emit_math(par, src, italic=True, sub=False, sup=False):
         if ch in "{}":
             i += 1
             continue
-        buf.append(ch)
+        buf.append("\u2212" if ch == "-" else ch)
         i += 1
     flush()
 
@@ -223,7 +239,7 @@ def add_table(doc, rows):
                              else WD_ALIGN_PARAGRAPH.LEFT)
             fill_paragraph(par, row[j] if j < len(row) else "")
             for r in par.runs:
-                r.font.size = Pt(8.5)
+                r.font.size = Pt(9)
                 if i == 0:
                     r.bold = True
             if i == 0:
@@ -354,6 +370,8 @@ def build():
     style = doc.styles["Normal"]
     style.font.name = FONT
     style.font.size = Pt(11)
+    style.paragraph_format.line_spacing = 1.08
+    style.paragraph_format.space_before = Pt(0)
     rpr = style.element.get_or_add_rPr()
     rfonts = rpr.get_or_add_rFonts()
     for slot in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
