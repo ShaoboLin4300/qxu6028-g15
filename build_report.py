@@ -148,9 +148,16 @@ def emit_text(par, text):
             par.add_run(chunk)
 
 
-def fill_paragraph(par, text):
-    for part in re.split(r"(\$[^$]+\$)", text):
+def fill_paragraph(par, text, citations=True):
+    """Render one paragraph; [n] becomes a superscript citation number."""
+    parts = re.split(r"(\$[^$]+\$|\[\d+\])", text)
+    for k, part in enumerate(parts):
         if not part:
+            continue
+        if citations and k > 0 and re.fullmatch(r"\[\d+\]", part):
+            run = par.add_run(part)
+            run.font.superscript = True
+            run.font.size = Pt(7)
             continue
         if part.startswith("$") and part.endswith("$"):
             emit_math(par, part[1:-1])
@@ -338,6 +345,49 @@ def add_hyperlink(paragraph, url, text, size=9, color="1a355e"):
     paragraph._p.append(link)
 
 
+
+def _member_table(doc, rows, widths=(3.5, 2.5, 3.3, 2.4), font=10):
+    """Borderless two-row table so the student IDs line up under each other."""
+    ncol = len(widths)
+    table = doc.add_table(rows=len(rows), cols=ncol)
+    table.autofit = False
+    tblPr = table._tbl.tblPr
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        el = OxmlElement("w:" + edge)
+        el.set(qn("w:val"), "none")
+        el.set(qn("w:sz"), "0")
+        borders.append(el)
+    tblPr.append(borders)
+    layout = OxmlElement("w:tblLayout")
+    layout.set(qn("w:type"), "fixed")
+    tblPr.append(layout)
+    mar = OxmlElement("w:tblCellMar")
+    for edge in ("top", "left", "bottom", "right"):
+        el = OxmlElement("w:" + edge)
+        el.set(qn("w:w"), "0")
+        el.set(qn("w:type"), "dxa")
+        mar.append(el)
+    tblPr.append(mar)
+    for gc, w in zip(table._tbl.tblGrid.findall(qn("w:gridCol")), widths):
+        gc.set(qn("w:w"), str(int(w * 567)))
+    for i, row in enumerate(rows):
+        for j in range(ncol):
+            cell = table.cell(i, j)
+            cell.width = Cm(widths[j])
+            cell.text = ""
+            p = cell.paragraphs[0]
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after = Pt(1)
+            member = row[j // 2]
+            text = member[0] if j % 2 == 0 else member[1]
+            r = p.add_run(text)
+            r.font.size = Pt(font)
+    tail = doc.add_paragraph()
+    tail.paragraph_format.space_after = Pt(0)
+    tail.paragraph_format.line_spacing = 0.5
+
+
 def parse_captions(text):
     caps = {}
     for m in re.finditer(r"\*\*Figure (\d+)\.\*\*(.+?)(?=\n\n|\Z)", text, re.S):
@@ -451,6 +501,19 @@ def build():
             p.paragraph_format.space_after = Pt(2)
             continue
         if block.startswith("Group G15"):
+            parts = [p.strip() for p in block.split(" · ")]
+            members = []
+            for item in parts[1:]:
+                bits = item.rsplit(" ", 1)
+                members.append(bits if len(bits) == 2 else [item, ""])
+            label = doc.add_paragraph()
+            label.paragraph_format.space_after = Pt(3)
+            r = label.add_run(parts[0])
+            r.font.size = Pt(10)
+            r.bold = True
+            rows = [members[0:2], members[2:4]]
+            _member_table(doc, rows)
+            continue
             p = doc.add_paragraph()
             text = re.sub(r"[*]", "", block)
             parts = text.split(" · ")
@@ -503,8 +566,11 @@ def build():
             h.paragraph_format.space_after = Pt(4)
             h.paragraph_format.keep_with_next = True
             continue
-        if re.match(r"^\d+\.\s", block):
-            add_paragraph(doc, re.sub(r"^\d+\.\s+", "", block), style="List Number")
+        if re.match(r"^\[\d+\]\s", block):
+            par = doc.add_paragraph()
+            par.paragraph_format.space_after = Pt(3)
+            par.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            fill_paragraph(par, block, citations=False)
             continue
         add_paragraph(doc, block)
 

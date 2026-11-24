@@ -564,7 +564,7 @@ def l3_forward(d, path):
     ax[0].plot(n, dm, "-", color="#8a8a8a", lw=2.2, alpha=0.9,
                label=r"measured $\bar d$")
     ax[0].plot(n, dp, "--", color=BLUE, lw=1.2, label=r"reconstructed $A\hat m$")
-    ax[0].set_ylabel("reading (mΩ/□)")
+    ax[0].set_ylabel("reading (mΩ/sq)")
     ax[0].legend(loc="upper left", ncol=2, handlelength=1.8)
     ax[0].set_title("(a) forward check: measured and reconstructed readings")
     _clean(ax[0])
@@ -574,7 +574,7 @@ def l3_forward(d, path):
                        label=r"$\pm3\sigma_j$")
     ax[1].axhline(0, color="#999999", lw=0.7)
     ax[1].set_xlabel("detector channel")
-    ax[1].set_ylabel("residual (µΩ/□)")
+    ax[1].set_ylabel("residual (µΩ/sq)")
     ax[1].legend(loc="upper left", ncol=2, handlelength=1.4)
     ax[1].set_title("(b) residual against the repeat noise band")
     _clean(ax[1])

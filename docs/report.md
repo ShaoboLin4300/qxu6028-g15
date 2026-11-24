@@ -48,7 +48,7 @@ neutrality, 2.0049 at 0.073 eV, 2.5988 at 0.100 eV and 5.1044 at 0.200 eV. The
 ratio passes 2 at 72.8 meV and 4 at 157.3 meV (Figure 1a). At the operating
 point $C = 2.6408$, so $n_F = 3.801\times10^{11}$ cm$^{-2}$ against the
 band-edge $1.004\times10^{12}$ cm$^{-2}$, and the mobility rises from
-$2.403\times10^4$ to $6.346\times10^4$ cm$^2$ V$^{-1}$ s$^{-1}$ at $\rho = 258.8\ \Omega/\square$.
+$2.403\times10^4$ to $6.346\times10^4$ cm$^2$ V$^{-1}$ s$^{-1}$ at $\rho = 258.8$ Ω/sq (ohms per square).
 
 **Why the factor grows.** Raising $E_F$ excludes an ever larger slice of
 occupied states between the Dirac point and $E_F$. At neutrality the two limits
