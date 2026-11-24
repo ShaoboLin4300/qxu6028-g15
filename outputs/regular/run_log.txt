@@ -1,4 +1,4 @@
-QXU6028 reproduce.py | commit ac25f13de55e349debe60781e4744cbceb2ef9d2
+QXU6028 reproduce.py | commit d711082a75386ef034cd962ef8c72af08b1797e9
 python 3.12.14 | numpy 2.3.5
 
 === dataset: regular | D:\deepseek harness工作区\qxu6028_g15\data\regular_G15 ===

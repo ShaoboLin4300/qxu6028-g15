@@ -25,7 +25,12 @@ GREEN = "#2e7d5b"
 PALETTE = [BLUE, RED, GREEN, ORANGE]
 
 plt.rcParams.update({
-    "font.family": "DejaVu Sans",
+    "font.family": "serif",
+    "font.serif": ["Times New Roman", "DejaVu Serif"],
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Times New Roman",
+    "mathtext.it": "Times New Roman:italic",
+    "mathtext.bf": "Times New Roman:bold",
     "font.size": 8.5,
     "axes.titlesize": 9.0,
     "axes.labelsize": 8.5,

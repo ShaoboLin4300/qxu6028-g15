@@ -20,6 +20,7 @@ from docx.shared import Cm, Pt, RGBColor
 ROOT = Path(__file__).resolve().parent
 FIG = ROOT / "figures" / "regular"
 OUT = ROOT / "docs" / "G15_QXU6028_Report.docx"
+FONT = "Times New Roman"
 
 SYM = {
     r"\times": "×", r"\pm": "±", r"\approx": "≈", r"\ge": "≥", r"\le": "≤",
@@ -124,7 +125,7 @@ def emit_text(par, text):
             run.italic = True
         elif chunk.startswith("`") and chunk.endswith("`"):
             run = par.add_run(chunk[1:-1])
-            run.font.name = "Consolas"
+            run.font.name = FONT
             run.font.size = Pt(9)
         else:
             par.add_run(chunk)
@@ -346,8 +347,12 @@ def build():
 
     doc = Document()
     style = doc.styles["Normal"]
-    style.font.name = "Calibri"
-    style.font.size = Pt(10.5)
+    style.font.name = FONT
+    style.font.size = Pt(11)
+    rpr = style.element.get_or_add_rPr()
+    rfonts = rpr.get_or_add_rFonts()
+    for slot in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+        rfonts.set(qn(slot), FONT)
     for s in doc.sections:
         s.page_width, s.page_height = Cm(21.0), Cm(29.7)      # A4, not Letter
         s.top_margin = s.bottom_margin = Cm(2.2)
@@ -403,6 +408,21 @@ def build():
             add_paragraph(doc, re.sub(r"^\d+\.\s+", "", block), style="List Number")
             continue
         add_paragraph(doc, block)
+
+    def _force(par):
+        for r in par.runs:
+            r.font.name = FONT
+
+    for par in doc.paragraphs:
+        _force(par)
+    for t in doc.tables:
+        for row in t.rows:
+            for cell in row.cells:
+                for par in cell.paragraphs:
+                    _force(par)
+    for sec in doc.sections:
+        for par in sec.footer.paragraphs:
+            _force(par)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     doc.save(OUT)
