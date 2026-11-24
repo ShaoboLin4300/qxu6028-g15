@@ -81,16 +81,20 @@ The blind run of the same pipeline gives `C = 4.3748`, a cone DoS, 45 indices,
 ## Repository layout
 
 ```
-reproduce.py          one-command pipeline (writes results, figures, diagnostics)
-src/common.py         constants, DoS, Fermi window, gradient matrix, loaders
-src/l1.py             forward carrier counting
-src/l2.py             DoS inverse problem and bootstrap
-src/l3.py             regularised reconstruction, resolution, detection limit
-src/figures.py        figure generation
-data/                 untouched group data (regular and blind)
-outputs/<dataset>/    results.json, run_log.txt, pipeline_commit.txt
-figures/<dataset>/    fig1 - fig5
-docs/                 AI usage log, AI error ledger, self-assessment, contribution statement
+reproduce.py            one-command pipeline (results, figures, diagnostics)
+check_consistency.py    asserts the report quotes the numbers in results.json
+build_report.py         builds docs/G15_QXU6028_Report.docx from docs/report.md
+src/common.py           constants, DoS, Fermi window, gradient matrix, loaders
+src/l1.py               forward carrier counting
+src/l2.py               DoS inverse problem and bootstrap
+src/l3.py               regularised reconstruction, resolution, detection limit
+src/figures.py          figure generation
+data/                   untouched group data (regular and blind)
+outputs/<dataset>/      results.json, run_log.txt, pipeline_commit.txt, diagnostics
+figures/<dataset>/      fig1 - fig5
+docs/                   report, AI usage log, AI error ledger, self-assessment,
+                        contribution statement, submission checklist
+blind_original/         historical Session-3 blind artefacts (see its README)
 ```
 
 `pipeline_commit` in `results.json` records the commit of the code that
