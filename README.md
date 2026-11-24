@@ -91,7 +91,7 @@ src/l3.py               regularised reconstruction, resolution, detection limit
 src/figures.py          figure generation
 data/                   untouched group data (regular and blind)
 outputs/<dataset>/      results.json, run_log.txt, pipeline_commit.txt, diagnostics
-figures/<dataset>/      fig1 - fig5
+figures/<dataset>/      fig1 - fig7
 docs/                   report, AI usage log, AI error ledger, self-assessment,
                         contribution statement, submission checklist
 blind_original/         historical Session-3 blind artefacts (see its README)

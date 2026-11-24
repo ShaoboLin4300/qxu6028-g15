@@ -67,8 +67,10 @@ def _select(fits, models):
     r_gap, k_gap = min(gap_fits, key=lambda t: t[0])
     if r_gap < C.GAP_RESIDUAL_RATIO * r_cone and models[k_gap]["Eg_kT"] >= C.GAP_MIN_KT:
         return {"model": "hard_gap", "Eg_kT": models[k_gap]["Eg_kT"], "k": k_gap,
+                "best_gap_kT": models[k_gap]["Eg_kT"],
                 "rms": r_gap, "fit": fits[k_gap], "r_cone": r_cone, "r_gap": r_gap}
     return {"model": "cone", "Eg_kT": 0.0, "k": 0,
+            "best_gap_kT": models[k_gap]["Eg_kT"],
             "rms": r_cone, "fit": fits[0], "r_cone": r_cone, "r_gap": r_gap}
 
 
@@ -140,6 +142,10 @@ def run(ds):
     gate_ok = (len(sign_change) > 0 and len(traj_sign_change) > 0
                and abs(traj_sign_change[0] - sign_change[0]) <= 1)
 
+    # Per-index distance to the selected model curve, used in the report
+    d2_sel = ((data_xy - models[sel["k"]]["xy"][sel["fit"]["j"]]) ** 2).sum(axis=1)
+    residual_per_index = np.sqrt(d2_sel)
+
     result = {
         "model": sel["model"],
         "Eg_kT": float(sel["Eg_kT"]),
@@ -151,6 +157,7 @@ def run(ds):
         "n_indices": int(len(idx)),
         "residual_cone": float(sel["r_cone"]),
         "residual_best_hard_gap": float(sel["r_gap"]),
+        "best_gap_kT": float(sel["best_gap_kT"]),
         "residual_ratio_gap_over_cone": float(sel["r_gap"] / sel["r_cone"]),
         "selection_threshold_ratio": C.GAP_RESIDUAL_RATIO,
         "gap_selection_fraction": frac_gap,
@@ -167,6 +174,10 @@ def run(ds):
         "measurement_index": idx.tolist(),
         "rh_norm": data_xy[:, 0].tolist(),
         "rs_norm": data_xy[:, 1].tolist(),
+        "RH_repeats": RH.tolist(),
+        "RS_repeats": RS.tolist(),
+        "residual_per_index": residual_per_index.tolist(),
+        "EF_assigned_per_index_eV": EF_traj.tolist(),
         "EF_grid_eV": EF_grid.tolist(),
         "selected_curve": {
             "RH_norm": models[sel["k"]]["xy"][:, 0].tolist(),

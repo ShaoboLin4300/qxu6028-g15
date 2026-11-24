@@ -141,10 +141,12 @@ def run_dataset(name, log):
 
     fig_dir = ROOT / "figures" / name
     figures.l1_sweep(d1, fig_dir / "fig1_l1_sweep.png")
-    figures.l2_model_fit({**d2, **r2}, fig_dir / "fig2_l2_model_fit.png")
-    figures.l2_trajectory({**d2, **r2}, fig_dir / "fig3_l2_ef_trajectory.png")
-    figures.l3_map({**d3, **r3}, fig_dir / "fig4_l3_map.png")
-    figures.l3_method({**d3, **r3}, fig_dir / "fig5_l3_method.png")
+    figures.l2_raw({**d2, **r2}, fig_dir / "fig2_l2_raw_repeats.png")
+    figures.l2_model_fit({**d2, **r2}, fig_dir / "fig3_l2_model_fit.png")
+    figures.l2_channels({**d2, **r2}, fig_dir / "fig4_l2_channels.png")
+    figures.l2_trajectory({**d2, **r2}, fig_dir / "fig5_l2_ef_trajectory.png")
+    figures.l3_map({**d3, **r3}, fig_dir / "fig6_l3_map.png")
+    figures.l3_method({**d3, **r3}, fig_dir / "fig7_l3_method.png")
     log.append(f"figures written to {fig_dir}")
 
     return results

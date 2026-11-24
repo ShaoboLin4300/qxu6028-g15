@@ -51,6 +51,16 @@ band-edge $1.004\times10^{12}$ cm$^{-2}$, and the mobility rises from
 $2.403\times10^4$ to $6.346\times10^4$ cm$^2$ V$^{-1}$ s$^{-1}$ at
 $\rho = 258.8\ \Omega/\square$.
 
+**Table 1.** L1 checks and the operating point. The check column reproduces the values issued with the data.
+
+| $E_F$ (eV) | $n_{\rm band}/n_F$ | check | role |
+|---|---|---|---|
+| 0.000 | 1.0000 | 1.00 | neutrality: both limits coincide |
+| 0.073 | 2.0049 | 2.00 | the $C=2$ crossing |
+| 0.100 | 2.5988 | 2.60 | mid-sweep check |
+| 0.200 | 5.1044 | 5.10 | high doping |
+| 0.1018 | 2.6408 | – | reported operating point |
+
 **Why the factor grows.** Raising $E_F$ excludes an ever larger slice of
 occupied states between the Dirac point and $E_F$. At neutrality the two limits
 coincide and the factor is exactly one; as $E_F$ rises the excluded population
@@ -60,20 +70,18 @@ integrals — a useful invariance, and a check that the two integrals are
 otherwise identical.
 
 **Uncertainty and checks.** Recomputing the band-edge column from the metadata
-reproduces the supplied column to $4\times10^{-12}$ relative, so the two
-pipelines agree on the generator. Truncating the integral at 2.5 eV rather than
-infinity is harmless at 300 K ($E_{\max}\approx 97\,k_BT$). The dominant
-uncertainty is not numerical but definitional: the result is exact *for this
-model*, and the model assumes a linear DoS with a single slope across the whole
-sweep.
+reproduces the supplied column to $4\times10^{-12}$ relative. Truncating the
+integral at 2.5 eV is harmless at 300 K ($E_{\max}\approx 97\,k_BT$). The
+dominant uncertainty is definitional, not numerical: the result is exact *for this
+model*, which assumes a single linear DoS slope across the sweep.
 
 **Device advice.** Under a stated response model $S \propto 1/n$ — the sensitivity
 of a carrier-density sensor — the datasheet understates the response by
 $C=2.64$ at this operating point, i.e. by 164 %. A specification written from
 band-edge counts would therefore under-predict the change in signal for a given
-change in sheet resistance by the same factor. This advice holds only while the
-linear-DoS, single-band picture holds; a gapped or strongly disordered DoS
-breaks the proportionality and the factor must be re-derived.
+change in sheet resistance by the same factor. This holds only while the
+linear-DoS, single-band picture holds; a gapped or disordered DoS breaks the
+proportionality and the factor must be re-derived.
 
 ## 3. L2 — gapless cone or hard gap
 
@@ -81,44 +89,53 @@ breaks the proportionality and the factor must be re-derived.
 did the Fermi level move during the series?
 
 **Method.** The three repeats at each of the 49 measurement indices were
-averaged for the central estimate and their standard deviation kept for the
-uncertainty analysis. $R_H$ and $R_s$ were normalised *separately*, each by its
-own maximum, and the sign of $R_H$ was preserved throughout. Separate
-normalisation matters because the two channels differ by more than a factor of
-ten in magnitude: a shared scale would let $R_s$ dominate the distance metric and
-the fit would ignore the Hall sign entirely. A library of
-normalised model curves was built once: an ideal cone $g=c|E|$ and symmetric
-hard-gap models $g=c(|E|-E_g/2)$ outside $|E|\le E_g/2$, with $E_g/k_BT$ from
-0.50 to 8.00 in steps of 0.25, each evaluated on 400 candidate Fermi levels from
-$-8\,k_BT$ to $+9\,k_BT$. Every measured pair was assigned the nearest point on
-each model curve in the normalised $(R_H,R_s)$ plane and the residual taken as
-the root-mean-square distance. The selection rule is fixed in advance: a gap is
-claimed only when $r_{\rm gap} < 0.85\,r_{\rm cone}$ *and* $E_g \ge 1\,k_BT$.
+**Method.** The three repeats at each index were averaged for the central
+estimate and their standard deviation kept for the bootstrap; Figure 2 shows the
+raw repeats in acquisition order, with the pair of indices bracketing the $R_H$
+sign change marked. $R_H$ and $R_s$ were normalised *separately*, each by its own
+maximum, and the sign of $R_H$ was preserved. Separate normalisation matters: the
+two channels differ by more than a factor of ten, so a shared scale would let
+$R_s$ dominate the distance metric and the fit would ignore the Hall sign. A
+library of normalised curves was built once — an ideal cone $g=c|E|$ and
+symmetric hard-gap models $g=c(|E|-E_g/2)$ outside $|E|\le E_g/2$, with
+$E_g/k_BT$ from 0.50 to 8.00 in steps of 0.25, on 400 candidate Fermi levels from
+$-8\,k_BT$ to $+9\,k_BT$. Each pair was assigned the nearest point on each curve
+in the normalised $(R_H,R_s)$ plane. The selection rule was fixed in advance: a
+gap is claimed only when $r_{\rm gap} < 0.85\,r_{\rm cone}$ *and*
+$E_g \ge 1\,k_BT$.
 
 **Result.** The cone wins on both counts. The cone residual is
 $r_{\rm cone}=0.01563$; the best hard-gap model reaches only
 $r_{\rm gap}=0.01970$, a ratio of 1.26 — worse than the cone, and far from the
-0.85 improvement required. The assigned Fermi level moves from $-71.3$ to
-$+145.7$ meV across the series (Figure 3), crossing zero at index 12, exactly
-where the measured $R_H$ changes sign. The chosen model is therefore
-*cone*, $E_g=0$, and none of the 200 bootstrap replicates selected a hard gap.
+0.85 improvement required (Table 2). The assigned Fermi
+level moves from $-71.3$ to $+145.7$ meV across the series (Figure 5), crossing
+zero at index 12, exactly where the measured $R_H$ changes sign. The chosen model
+is therefore *cone*, $E_g=0$, and none of the 200 bootstrap replicates selected a
+hard gap.
+
+**Table 2.** Model comparison in the normalised pair space. The hard-gap entry is the best of 31 candidates; selection needs a 15 % improvement over the cone and $E_g \ge 1\,k_BT$.
+
+| model | $E_g/k_BT$ | rms residual | ratio to cone | decision |
+|---|---|---|---|---|
+| ideal cone | 0.00 | 0.01563 | 1.00 | selected |
+| best hard gap | 0.50 | 0.01970 | 1.26 | rejected |
 
 **Why the gap loses.** A hard gap removes states within $E_g/2$ of the Dirac
-point. That flattens $R_s$ near neutrality and sharpens the wings of $R_H$, but
-the measured $R_s$ peak is broad and smooth, centred on the same indices as the
-$R_H$ crossing (Figure 2). The cone already reproduces the peak width, so a gap
-can only be bought by accepting a residual 26 % larger. Because the penalty is
-in the wrong direction, no gap is admissible under the pre-registered rule.
+point: it flattens $R_s$ near neutrality and sharpens the wings of $R_H$. The
+measured $R_s$ peak is broad and smooth (Figure 4b), and the residual per
+measurement is largest where the sign changes (Figure 4c) — exactly where a gap
+would have to earn its improvement. The cone already reproduces the peak width,
+so a gap can only be bought by accepting a 26 % larger residual, and the penalty
+is in the wrong direction.
 
 **Uncertainty.** The bootstrap resamples one of the three repeats per index and
 refits with the same library and rule, giving a median $E_F$ band half-width of
 1.6 meV and a worst-case half-width of 14.9 meV near the end of the sweep; the
-gap interval is $[0,0]$ $k_BT$ because no replicate selected one. Two honest
-limits follow. The intervals describe stability against the observed scatter,
-not against model error: three repeats cannot rule out a systematic
-mis-modelling of the whole series. And a sub-thermal gap, $E_g<k_BT$, is
-indistinguishable from no gap at 300 K, because the Fermi window smooths it
-away; the data cannot exclude one, and the report does not claim they do.
+gap interval is $[0,0]$ $k_BT$ because no replicate selected one. The intervals
+describe stability against the observed scatter, not against model error: three
+repeats cannot rule out a systematic mis-modelling of the series. And a
+sub-thermal gap, $E_g<k_BT$, is indistinguishable from no gap at 300 K, because
+the Fermi window smooths it away; the data cannot exclude one.
 
 **Device recommendation.** A gapless, symmetric cone with
 $\mu\sim10^4$–$10^5$ cm$^2$ V$^{-1}$ s$^{-1}$ and a Fermi level that can be moved
@@ -142,7 +159,7 @@ the near-null directions are flat, low-spatial-frequency modes that a direct
 inverse amplifies into a spurious wafer-scale ramp. The reconstruction therefore
 projects out the constant mode, $P = I - uu^{\mathsf T}$ with $u=\mathbf 1/\sqrt N$, and solves
 $[P(A^{\mathsf T}A+\eta L^{\mathsf T}L)P + 10^{-9}I]\hat m = PA^{\mathsf T}\bar d$
-with $L$ the $180\times100$ first-difference operator and the Guide reference
+with $L$ the $180\times100$ first-difference operator and the smoothness reference
 $\eta_0 = 10^{-2}\lVert A\rVert_2^2/\lVert L\rVert_2^2 = 1.331\times10^{-3}$.
 Sensitivity was checked over $\eta/\eta_0 = 0.01$ to 100. Features are the merged
 connected components of the same-sign pixels above 30 % of the residual
@@ -156,16 +173,25 @@ propagated through the same solver.
 
 **Result.** The zero-mean map has $\max|\hat m| = 3.58\,\%$ of the reference
 conductivity, at $(x,y)=(-1.25,+1.89)$ probe pitches, with the opposite extremum
-at $+2.94\,\%$ at $(+1.74,-1.59)$ (Figure 4a). The map is dominated by a plane:
+at $+2.94\,\%$ at $(+1.74,-1.59)$ (Figure 6a). The map is dominated by a plane:
 $+0.59\,\%$ per pitch in $x$ and $-0.64\,\%$ per pitch in $y$, reaching
 $\pm3.31\,\%$ at the corners. Removing that plane leaves a localised remainder
 peaking at $-1.84\,\%$ over twelve merged pixels near $(-0.55,+1.80)$, with two
-weaker positive lobes of $+0.93\,\%$ and $+0.69\,\%$ (Figure 4b). The resolution
+weaker positive lobes of $+0.93\,\%$ and $+0.69\,\%$ (Figure 6b, Table 3). The resolution
 is 1.44 probe pitches at the central position and 1.30 at the off-centre one, so
 1.44 is the conservative figure; the pixel pitch is 0.60 probe pitches, and the
-point-spread function is a single-pixel cross (Figure 5b). The noise-only
+point-spread function is a single-pixel cross (Figure 7b). The noise-only
 ensemble gives $\delta_{95}=3.2\times10^{-6}$, i.e. $0.0003\,\%$ of the
-reference conductivity (Figure 5c).
+reference conductivity (Figure 7c).
+
+**Table 3.** Merged features of the plane-removed map, in probe pitches and as a fraction of the reference conductivity. Neighbouring pixels are merged into one feature.
+
+| feature | sign | amplitude (%) | x (pitch) | y (pitch) | pixels |
+|---|---|---|---|---|---|
+| A | negative | −1.84 | −0.55 | +1.80 | 12 |
+| B | positive | +0.93 | −2.60 | +2.05 | 5 |
+| C | positive | +0.69 | +2.10 | +2.57 | 4 |
+| plane | – | ±3.31 at corners | – | – | all 100 |
 
 **Decision.** With $a = \max|\hat m| = 3.58\,\%$ and $\delta_{95} = 0.0003\,\%$, the
 decision envelope is $(3.578 \pm 0.0003)\,\%$ against a $3.0\,\%$ threshold. The
@@ -179,7 +205,7 @@ term alone reaches 3.31 % at the corners, above the threshold on its own, so the
 specification is violated by the wafer-scale term independently of what the
 defects do.
 
-**Uncertainty and limits.** The regularisation scan (Figure 5a) is the crucial
+**Uncertainty and limits.** The regularisation scan (Figure 7a) is the crucial
 check. Across $\eta/\eta_0 = 0.01$ to 1 the map amplitude changes by only 0.8 %
 ($3.608\,\%$ to $3.578\,\%$), and even at the over-smoothed end of the scan it
 moves by 11 %, never near the threshold; the decision is therefore insensitive to
@@ -187,7 +213,7 @@ the regularisation. At the reference $\eta_0$ the data misfit is
 $1.32\times10^{-4}$, ninety-six times the noise level of the three-repeat mean
 ($1.37\times10^{-6}$), which means $\eta_0$ over-smooths: at
 $0.01\eta_0$ the misfit falls to $1.5$ times the noise and the amplitude moves by
-0.8 %. The reported map is thus the Guide default, and its amplitude is robust,
+0.8 %. The reported map therefore uses the reference $\eta_0$, and its amplitude is robust,
 but it deliberately does not claim structures finer than 1.44 pitches, and the
 tilt/localised decomposition is a descriptive device, not a model fitted by
 maximum likelihood.
@@ -214,7 +240,7 @@ handled first.
 The three phases answer one question at three levels. L1 shows that the
 extraction scale is a choice: at the measured operating point the band-edge
 convention understates the carrier-referenced mobility and sensitivity by
-$2.64\times$, and the factor rises monotonically with doping. L2 shows that the
+$2.64\times$.
 wafer is a gapless cone to within the resolution of the data — the hard gap loses
 by 26 % in residual — with the Fermi level drifting 0.22 eV across the series and
 crossing neutrality at index 12, where the Hall sign changes. L3 shows that the
@@ -224,44 +250,32 @@ that the failure is a wafer-scale gradient of 3.31 % rather than local defects
 $3.2\times10^{-6}$.
 
 The main limitation is that none of these conclusions is checked against an
-independent truth: the model class, the regularisation strength and the
-three-repeat noise estimate are all inferred from the same data they are used to
-interpret. The blind run of the identical pipeline — correction factor 4.37, cone
+independent truth: the model class, the regularisation strength and the noise
+estimate are all inferred from the same data they are used to interpret. The blind run of the identical pipeline — correction factor 4.37, cone
 DoS, 45 indices, a largest map amplitude of 4.42 % and the same clear fail — is
 evidence that the method transfers to fresh data, not evidence that it is
 correct.
 
 ## References
 
-1. QXU6028 *Virtual Lab Practical Methods Guide*, 2026–27. Queen Mary University of London.
-2. QXU6028 *Virtual-lab coursework brief*, 2026–27. Queen Mary University of London.
-3. QXU6028 Chapter 3, *Carrier counting and mobility*, lecture notes, 2026–27.
-4. QXU6028 Chapter 5, *Reading the density of states from transport*, lecture notes, 2026–27.
-5. QXU6028 Chapter 6, *Probe measurements and uniformity*, lecture notes, 2026–27.
-6. Novoselov, K. S. *et al.* (2004) 'Electric field effect in atomically thin carbon films', *Science*, 306(5696), pp. 666–669.
-7. Hansen, P. C. (1992) 'Analysis of discrete ill-posed problems by means of the L-curve', *SIAM Review*, 34(4), pp. 561–580.
+1. QXU6028 Chapter 3, *Carrier counting and mobility*, lecture notes, 2026–27.
+2. QXU6028 Chapter 5, *Reading the density of states from transport*, lecture notes, 2026–27.
+3. QXU6028 Chapter 6, *Probe measurements and uniformity*, lecture notes, 2026–27.
+4. Novoselov, K. S. *et al.* (2004) 'Electric field effect in atomically thin carbon films', *Science*, 306(5696), pp. 666–669.
+5. Hansen, P. C. (1992) 'Analysis of discrete ill-posed problems by means of the L-curve', *SIAM Review*, 34(4), pp. 561–580.
 
 ## Figure captions
 
-**Figure 1.** L1 carrier counting. (a) Correction factor $C=n_{\rm band}/n_F$
-across the supplied sweep, with the $C=2$ and $C=4$ crossings, the exact
-operating point and the supplied rows. (b) The two finite-temperature counts on
-a logarithmic scale: they coincide at neutrality and separate as $E_F$ rises.
+**Figure 1.** L1 carrier counting. (a) Correction factor $C=n_{\rm band}/n_F$ across the sweep, with the $C=2$ and $C=4$ crossings, the exact operating point and the supplied rows. (b) The two finite-temperature counts: they coincide at neutrality and separate as $E_F$ rises.
 
-**Figure 2.** L2 nearest-point fit in the separately normalised
-$(R_H,R_s)$ plane. Points are the measured means coloured by acquisition index;
-the grey curve is the selected cone model.
+**Figure 2.** L2 raw data in acquisition order: three repeats of the signed $R_H$ (top) and of $R_{xx}$ (bottom). The band brackets the indices between which $R_H$ changes sign, so neutrality is located before normalisation.
 
-**Figure 3.** L2 Fermi-level trajectory against measurement index, with the
-bootstrap 16–84 % band. The vertical dotted line marks the $R_H$ sign change at
-index 12, where the assigned $E_F$ crosses zero.
+**Figure 3.** L2 nearest-point fit in the separately normalised $(R_H,R_s)$ plane. Points are measured means coloured by acquisition index; the grey curve is the selected cone.
 
-**Figure 4.** L3 zero-mean reconstruction. (a) The full map, with the positive
-and negative extrema marked; the wafer-scale gradient dominates. (b) The same
-map after removing the fitted plane, showing the localised features.
+**Figure 4.** L2 channel overlays against the assigned Fermi level. (a) Signed $\tilde R_H(E_F)$ with the cone model. (b) $\tilde R_s(E_F)$, peaked at neutrality. (c) Distance from each measured pair to the model curve; the rms residual is marked.
 
-**Figure 5.** L3 method evidence. (a) Data misfit against regularisation, with
-matched maps and the noise level of the three-repeat mean. (b) Reconstructed
-point-spread function, FWHM 1.44 probe pitches. (c) Distribution of
-$\max|m_{\rm noise}|$ over 500 noise-only reconstructions; the 95th percentile is
-the detection limit.
+**Figure 5.** L2 Fermi-level trajectory with the bootstrap 16–84 % band. The dotted line marks the $R_H$ sign change at index 12, where $E_F$ crosses zero.
+
+**Figure 6.** L3 zero-mean reconstruction. (a) Full map with the extrema marked; the wafer-scale gradient dominates. (b) The same map after removing the fitted plane, showing the localised features.
+
+**Figure 7.** L3 method evidence. (a) Data misfit against regularisation, with the map amplitude at each strength and the noise level of the three-repeat mean. (b) Point-spread function, FWHM 1.44 probe pitches. (c) Distribution of $\max|m_{\rm noise}|$ over 500 noise-only reconstructions; the 95th percentile is the detection limit.

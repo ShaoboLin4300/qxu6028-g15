@@ -71,6 +71,78 @@ def l1_sweep(d, path):
     return _save(fig, path)
 
 
+def l2_raw(d, path):
+    """The three raw repeats of both channels, in acquisition order."""
+    idx = np.asarray(d["measurement_index"])
+    RH = np.asarray(d["RH_repeats"])
+    RS = np.asarray(d["RS_repeats"])
+    fig, ax = plt.subplots(2, 1, figsize=(7.4, 5.4), sharex=True,
+                           constrained_layout=True)
+    for a, (M, lab, unit) in zip(ax, [(RH, r"$R_H$", r"$R$"),
+                                      (RS, r"$R_{xx}$", r"$\Omega/\square$")]):
+        for r in range(M.shape[1]):
+            a.plot(idx, M[:, r], "o-", ms=3, lw=0.9, alpha=0.75,
+                   label=f"repeat {r+1}")
+        a.set_ylabel(lab)
+        a.grid(alpha=0.25)
+        a.legend(fontsize=8, ncol=3, loc="lower right")
+    for k in d.get("RH_sign_change_between_indices", []):
+        for a in ax:
+            a.axvspan(idx[k] - 0.4, idx[k + 1] + 0.4, color="#c00000", alpha=0.10)
+        ax[0].annotate("$R_H$ changes sign between these two indices\n"
+                       "(neutrality is bracketed before normalisation)",
+                       xy=(0.36, 0.93), xycoords="axes fraction",
+                       fontsize=7.5, color="#c00000")
+    ax[1].set_xlabel("measurement index (original acquisition order)")
+    ax[0].set_title("L2 raw data: three repeats of the signed Hall and sheet channels",
+                    fontsize=10)
+    return _save(fig, path)
+
+
+def l2_channels(d, path):
+    """Signed R_H(E_F) and R_s(E_F) overlays plus the residual per index."""
+    EFg = np.asarray(d["EF_grid_eV"]) * 1e3
+    cv = np.asarray(d["selected_curve"]["RH_norm"])
+    cs = np.asarray(d["selected_curve"]["Rs_norm"])
+    ef = np.asarray(d["EF_assigned_per_index_eV"]) * 1e3
+    rh = np.asarray(d["rh_norm"])
+    rs = np.asarray(d["rs_norm"])
+
+    fig, ax = plt.subplots(1, 3, figsize=(11.4, 3.5), constrained_layout=True)
+
+    ax[0].plot(EFg, cv, color="0.55", lw=1.5, label="cone model")
+    ax[0].plot(ef, rh, "o", ms=4, color="#1f4e79", label="measured (mean of 3)")
+    ax[0].axhline(0, color="0.75", lw=0.8)
+    ax[0].axvline(0, color="0.75", lw=0.8)
+    ax[0].set_xlabel(r"assigned $E_F$ (meV)")
+    ax[0].set_ylabel(r"$\tilde R_H$")
+    ax[0].set_title(r"(a) signed $\tilde R_H(E_F)$", fontsize=9)
+    ax[0].legend(fontsize=7.5)
+    ax[0].grid(alpha=0.25)
+
+    ax[1].plot(EFg, cs, color="0.55", lw=1.5, label="cone model")
+    ax[1].plot(ef, rs, "o", ms=4, color="#c00000", label="measured (mean of 3)")
+    ax[1].set_xlabel(r"assigned $E_F$ (meV)")
+    ax[1].set_ylabel(r"$\tilde R_s$")
+    ax[1].set_title(r"(b) $\tilde R_s(E_F)$, peaked at neutrality", fontsize=9)
+    ax[1].legend(fontsize=7.5)
+    ax[1].grid(alpha=0.25)
+
+    res = np.asarray(d["residual_per_index"])
+    ax[2].bar(np.asarray(d["measurement_index"]), res, color="#1f4e79", width=0.8)
+    ax[2].axhline(np.sqrt(np.mean(res ** 2)), color="#c00000", ls="--", lw=1.0)
+    ax[2].annotate(f"rms = {np.sqrt(np.mean(res**2)):.5f}",
+                   (0.55, 0.94), xycoords="axes fraction", fontsize=8, color="#c00000")
+    ax[2].set_xlabel("measurement index")
+    ax[2].set_ylabel("distance to model curve")
+    ax[2].set_title("(c) residual per measurement", fontsize=9)
+    ax[2].grid(alpha=0.25, axis="y")
+
+    fig.suptitle("L2 channel overlays and residuals against the selected model",
+                 fontsize=10)
+    return _save(fig, path)
+
+
 def l2_model_fit(d, path):
     fig, ax = plt.subplots(figsize=(5.4, 4.2))
     rh = np.asarray(d["rh_norm"])

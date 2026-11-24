@@ -1,8 +1,9 @@
 """Build the submission-ready Word report from docs/report.md.
 
-Handles the small subset of LaTeX used in the source: subscripts, superscripts,
-Greek symbols and a handful of operators.  Figures are inserted at the end of
-the section that first refers to them, with numbered captions.
+Handles the small subset of LaTeX used in the source (subscripts, superscripts,
+Greek symbols and a few operators), markdown tables, and figure insertion at the
+end of the section that first refers to them.  Captions are taken from the
+markdown so the two documents cannot drift apart.
 """
 
 from __future__ import annotations
@@ -12,9 +13,10 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Cm, Pt, RGBColor
+from docx.shared import Cm, Pt
 
 ROOT = Path(__file__).resolve().parent
+_SECTION = None
 FIG = ROOT / "figures" / "regular"
 OUT = ROOT / "docs" / "G15_QXU6028_Report.docx"
 
@@ -29,21 +31,23 @@ SYM = {
     r"\propto": "∝", r"\sigma": "σ", r"\sim": "~", r"\int": "∫",
 }
 
-FIGURES = [
-    ("2.", [("fig1_l1_sweep.png", 16.2)],
-     "Figure 1. L1 carrier counting. (a) Correction factor C = n_band/n_F across the supplied sweep, with the C = 2 and C = 4 crossings, the exact operating point and the supplied rows. (b) The two finite-temperature counts on a logarithmic scale: they coincide at neutrality and separate as E_F rises."),
-    ("3.", [("fig2_l2_model_fit.png", 9.6), ("fig3_l2_ef_trajectory.png", 14.4)],
-     "Figure 2. L2 nearest-point fit in the separately normalised (R_H, R_s) plane. Points are the measured means coloured by acquisition index; the grey curve is the selected cone model. Figure 3. L2 Fermi-level trajectory against measurement index with the bootstrap 16–84 % band; the dotted line marks the R_H sign change at index 12, where the assigned E_F crosses zero."),
-    ("4.", [("fig4_l3_map.png", 16.2), ("fig5_l3_method.png", 16.2)],
-     "Figure 4. L3 zero-mean reconstruction. (a) The full map with the positive and negative extrema marked; the wafer-scale gradient dominates. (b) The same map after removing the fitted plane, showing the localised features. Figure 5. L3 method evidence. (a) Data misfit against regularisation, with matched maps and the noise level of the three-repeat mean. (b) Reconstructed point-spread function, FWHM 1.44 probe pitches. (c) Distribution of max|m_noise| over 500 noise-only reconstructions."),
-]
+# section heading prefix -> [(file, width_cm, figure number)]
+FIGURES = {
+    "2.": [("fig1_l1_sweep.png", 16.2, 1)],
+    "3.": [("fig2_l2_raw_repeats.png", 9.4, 2),
+           ("fig3_l2_model_fit.png", 8.4, 3),
+           ("fig4_l2_channels.png", 15.0, 4),
+           ("fig5_l2_ef_trajectory.png", 11.8, 5)],
+    "4.": [("fig6_l3_map.png", 16.2, 6),
+           ("fig7_l3_method.png", 16.2, 7)],
+}
 
 
 def emit_math(par, src, italic=True, sub=False, sup=False):
     """Write one LaTeX fragment into a paragraph as formatted runs."""
     i, buf = 0, []
 
-    def flush(bold_flag=None):
+    def flush():
         if buf:
             run = par.add_run("".join(buf))
             run.italic = italic
@@ -117,15 +121,10 @@ def emit_text(par, text):
             run.font.name = "Consolas"
             run.font.size = Pt(9)
         else:
-            run = par.add_run(chunk)
-            # inline math inside the chunk
-        run = None
+            par.add_run(chunk)
 
 
-def add_paragraph(doc, text, style=None):
-    par = doc.add_paragraph(style=style)
-    par.paragraph_format.space_after = Pt(6)
-    par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+def fill_paragraph(par, text):
     for part in re.split(r"(\$[^$]+\$)", text):
         if not part:
             continue
@@ -136,13 +135,82 @@ def add_paragraph(doc, text, style=None):
     return par
 
 
+def add_paragraph(doc, text, style=None):
+    par = doc.add_paragraph(style=style)
+    par.paragraph_format.space_after = Pt(6)
+    par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    fill_paragraph(par, text)
+    if re.match(r"^\*\*Table \d+", text):
+        for r in par.runs:
+            r.font.size = Pt(8.5)
+        par.paragraph_format.keep_with_next = True
+        par.paragraph_format.space_before = Pt(8)
+    return par
+
+
+def add_table(doc, rows):
+    cells = []
+    for row in rows:
+        parts = [c.strip() for c in row.strip().strip("|").split("|")]
+        if all(re.fullmatch(r":?-{2,}:?", c) for c in parts):
+            continue
+        cells.append(parts)
+    if not cells:
+        return
+    ncol = max(len(r) for r in cells)
+    table = doc.add_table(rows=len(cells), cols=ncol)
+    table.style = "Table Grid"
+    for i, row in enumerate(cells):
+        for j in range(ncol):
+            cell = table.cell(i, j)
+            cell.text = ""
+            par = cell.paragraphs[0]
+            par.paragraph_format.space_after = Pt(2)
+            fill_paragraph(par, row[j] if j < len(row) else "")
+            for r in par.runs:
+                r.font.size = Pt(8.5)
+                if i == 0:
+                    r.bold = True
+    doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+
+def parse_captions(text):
+    caps = {}
+    for m in re.finditer(r"\*\*Figure (\d+)\.\*\*(.+?)(?=\n\n|\Z)", text, re.S):
+        caps[int(m.group(1))] = "Figure %s.%s" % (m.group(1), m.group(2).rstrip())
+    return caps
+
+
+def flush_figures(doc, captions):
+    """Emit the figures belonging to the section that has just ended."""
+    global _SECTION
+    figs = FIGURES.get(_SECTION)
+    if not figs:
+        return
+    for f, width, fignum in figs:
+        pic = doc.add_paragraph()
+        pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        pic.paragraph_format.space_before = Pt(8)
+        pic.paragraph_format.space_after = Pt(2)
+        pic.paragraph_format.keep_with_next = True
+        pic.add_run().add_picture(str(FIG / f), width=Cm(width))
+        cap = doc.add_paragraph()
+        cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        cap.paragraph_format.space_after = Pt(8)
+        fill_paragraph(cap, captions.get(fignum, ""))
+        for r in cap.runs:
+            r.font.size = Pt(8.5)
+            r.italic = True
+    FIGURES[_SECTION] = []
+
 def build():
     md = (ROOT / "docs" / "report.md").read_text(encoding="utf-8")
-    lines = md.splitlines()
+    captions = parse_captions(md.split("## Figure captions")[-1])
 
-    # Markdown hard-wraps: join lines into blocks separated by blank lines.
+    # join hard-wrapped markdown into blocks; headings, title lines, numbered
+    # references and table rows stay as blocks of their own
     blocks, buf = [], []
-    for raw in lines:
+    for raw in md.splitlines():
         line = raw.rstrip()
         if not line.strip():
             if buf:
@@ -151,7 +219,7 @@ def build():
             continue
         if (line.startswith("#") or line.startswith("---")
                 or line.startswith("**QXU6028") or line.startswith("Group G15")
-                or line.startswith("Repository:")
+                or line.startswith("Repository:") or line.startswith("|")
                 or re.match(r"^\d+\.\s", line)):
             if buf:
                 blocks.append(" ".join(buf))
@@ -162,6 +230,18 @@ def build():
     if buf:
         blocks.append(" ".join(buf))
 
+    items, i = [], 0
+    while i < len(blocks):
+        if blocks[i].startswith("|"):
+            rows = []
+            while i < len(blocks) and blocks[i].startswith("|"):
+                rows.append(blocks[i])
+                i += 1
+            items.append(("table", rows))
+        else:
+            items.append(("block", blocks[i]))
+            i += 1
+
     doc = Document()
     style = doc.styles["Normal"]
     style.font.name = "Calibri"
@@ -170,9 +250,13 @@ def build():
         s.top_margin = s.bottom_margin = Cm(2.2)
         s.left_margin = s.right_margin = Cm(2.3)
 
-    figures_done = set()
+    done = set()
     title_done = False
-    for block in blocks:
+    for kind, value in items:
+        if kind == "table":
+            add_table(doc, value)
+            continue
+        block = value
         if block.startswith("# ") and not title_done:
             p = doc.add_paragraph()
             r = p.add_run(block[2:].strip())
@@ -198,7 +282,10 @@ def build():
         if block.startswith("## "):
             heading = block[3:].strip()
             if heading.startswith("Figure captions"):
+                flush_figures(doc, captions)
                 break
+            # figures sit at the END of the section that refers to them
+            flush_figures(doc, captions)
             h = doc.add_paragraph()
             hr = h.add_run(heading)
             hr.bold = True
@@ -206,21 +293,8 @@ def build():
             h.paragraph_format.space_before = Pt(12)
             h.paragraph_format.space_after = Pt(4)
             h.paragraph_format.keep_with_next = True
-            for num, files, caption in FIGURES:
-                if heading.startswith(num) and num not in figures_done:
-                    figures_done.add(num)
-                    for f, width in files:
-                        pic = doc.add_paragraph()
-                        pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                        pic.paragraph_format.space_before = Pt(6)
-                        pic.paragraph_format.space_after = Pt(2)
-                        pic.add_run().add_picture(str(FIG / f), width=Cm(width))
-                    cap = doc.add_paragraph()
-                    cap.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                    cr = cap.add_run(caption)
-                    cr.font.size = Pt(8.5)
-                    cr.italic = True
-                    cap.paragraph_format.space_after = Pt(10)
+            global _SECTION
+            _SECTION = next((k for k in FIGURES if heading.startswith(k)), None)
             continue
         if re.match(r"^\d+\.\s", block):
             add_paragraph(doc, re.sub(r"^\d+\.\s+", "", block), style="List Number")
@@ -229,7 +303,7 @@ def build():
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     doc.save(OUT)
-    print("wrote", OUT)
+    print("wrote", OUT, "| captions:", sorted(captions))
     return OUT
 
 
