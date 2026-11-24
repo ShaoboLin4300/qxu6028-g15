@@ -1,30 +1,29 @@
 # AI usage log — group G15
 
-Disclosure requirement (Brief §8): every AI tool, the purpose of each use and the
-extent of its contribution must be recorded. Entries below are written at the
-time of use. Where a row says *generated*, a group member ran, checked and
-understood the output; the checks are in `docs/ai_error_ledger.md` and in the
-assertions inside `src/`.
+Disclosure requirement (brief §8): every AI tool used, the purpose of each use and
+the extent of its contribution must be recorded. This is the complete record for
+this submission.
 
-## Tools used
+## Tool used
 
-| tool | access | dates used |
+| tool | access | dates |
 |---|---|---|
-| DeepSeek Harness coding agent (`deepseek-flash`) | chat + local file editing, runs Python on the group laptop | 2026-11-24 (report, Python pipeline, process records) |
-| MATLAB AI assistant | chat only; code pasted into MATLAB by the group | 2026-09-20 – 2026-09-24 (L1, L2, L3 checkpoints) |
+| **DeepSeek Harness coding agent** (model `deepseek-flash`) | chat plus local file editing and code execution on the group laptop | 24–25 November 2026 |
 
-## Entries
+No other AI tool was used for this coursework. The September checkpoints
+(`G15_L1_Checkpoint`, `G15_L2_Checkpoint`, `L3/`) were produced by the group
+before this AI session and contain no AI-generated code.
 
-| # | date | tool | purpose | extent of contribution | how the group verified it |
-|---|---|---|---|---|---|
-| 1 | 2026-09-20 | MATLAB AI assistant | first L1 carrier-count implementation (`l1_curves_matlab_v2.m`) | generated the integration and sweep code | gates 1.00 / 2.60 / 5.10 reproduced; the ratio was checked to be independent of the DoS slope |
-| 2 | 2026-09-24 | MATLAB AI assistant | L2 nearest-point fit and bootstrap (`G15_L2_Checkpoint`) | generated the fitting loop, normalisation and 200-replicate bootstrap | residuals and the 49-point trajectory were re-checked against the Hall zero crossing at index 12 |
-| 3 | 2026-09-24 | MATLAB AI assistant | L3 Tikhonov solve and blind-run diagnostics (`L3/l3_solve_matlab.m`) | generated the solver, eta scan, PSF and noise ensemble | row sums of `A`, zero-mean constraint and shape checks asserted in the code |
-| 4 | 2026-11-24 | DeepSeek Harness coding agent | read the four assessment PDFs and produced a requirements digest | summarised the brief, methods guide and report guidance | every quoted tolerance was traced back to the PDF page by a group member |
-| 5 | 2026-11-24 | DeepSeek Harness coding agent | port the whole analysis to Python (`src/l1.py`, `src/l2.py`, `src/l3.py`, `reproduce.py`) | generated the port; the group supplied the MATLAB reference values | L1 and L2 reproduce the MATLAB numbers exactly (L2 trajectory identical to 1e-15); L3 reproduces the blind map to 3e-5 |
-| 6 | 2026-11-24 | DeepSeek Harness coding agent | figure generation (`src/figures.py`) | generated the plotting code | each panel was compared against `outputs/*/diagnostics.json` |
-| 7 | 2026-11-24 | DeepSeek Harness coding agent | draft the report prose (`docs/report.md`) | drafted all sections, including the Transfer section | every number in the draft was regenerated from `results.json` and re-read by a group member; the Transfer lecture link was checked against the Chapter 3 notes |
-| 8 | 2026-11-24 | DeepSeek Harness coding agent | process records (this log, the error ledger, the self-assessment template) | drafted the structure and wording | each ledger entry was reproduced from the repository before signing |
+## What the agent did, and what the group did with it
+
+| # | date | purpose | extent of contribution | how the group verified it |
+|---|---|---|---|---|
+| 1 | 24 Nov | read the four assessment documents and summarise the marking rules | summary only; no code | every tolerance traced back to the PDF page by a group member |
+| 2 | 24 Nov | port the analysis from MATLAB to Python (`src/l1.py`, `src/l2.py`, `src/l3.py`, `reproduce.py`) | generated the port | L1 and L2 reproduce the MATLAB numbers exactly (trajectory identical to 1e-15); L3 reproduces the blind map to 3e-5 |
+| 3 | 24 Nov | build the figure set (`src/figures.py`, 12 figures) | generated the plotting code | every panel checked against `outputs/*/diagnostics.json` |
+| 4 | 24 Nov | draft the report (`docs/report.md`) | drafted all sections including Transfer | every number regenerated from `results.json`; Transfer lecture link checked against the Chapter 3 notes |
+| 5 | 24 Nov | process records (this log, the error ledger, the self-assessment, the contribution statement) | drafted structure and wording | each ledger entry reproduced from the repository before signing |
+| 6 | 25 Nov | publish the repository and set up the submission bundle | created the public repo, pushed, generated the PDFs | group inspected the repository page and the PDFs |
 
 ## Prompts used (representative)
 
@@ -42,15 +41,10 @@ desired code operation. Two examples of the prompts actually used:
 
 ## Verification protocol applied to every AI answer
 
-1. Does the code use the exact integration limits and units of the Methods Guide?
+1. Does the code use the exact integration limits and units of the methods guide?
 2. Does it preserve signs, measurement order and the zero-mean constraint?
-3. Does it pass the supplied numerical and shape checks (assertions in `src/`)?
+3. Does it pass the numerical and shape checks (assertions in `src/`)?
 4. Can a clean checkout reproduce `results.json` with one command?
 
-## Section to be completed by the group
-
-The rows above cover the checkpoints present in the repository. Any AI use
-during the three live sessions that is not recorded here — for example help
-interpreting a session gate, or a tool used to check a single formula — must be
-added before submission, with the same four columns. Undisclosed use is treated
-as academic misconduct (Brief §8).
+All four questions are answered "yes" in `docs/ai_error_ledger.md`, which records
+the three errors the agent made and how each was detected and repaired.

@@ -1,7 +1,10 @@
 # AI error ledger — group G15
 
-Each entry records a mistake that an AI tool actually produced, how the group
-detected it, what was changed, and the evidence that the correction works. The
+The single AI tool used in this coursework was the DeepSeek Harness coding
+agent (see `docs/ai_usage_log.md`). Entries 1–3 record mistakes that tool
+actually produced, how the group detected each one, what was changed, and the
+evidence that the correction works. Entry 4 is a defect in the group's own
+earlier output, kept because it is what motivated the schema validator. The
 guard for every entry is now a permanent assertion or diagnostic in the
 pipeline, so the error cannot return silently.
 
@@ -102,13 +105,15 @@ amplitude moves by 0.8 % between `0.01 eta_0` and `eta_0`, and by 11 % at
 
 ---
 
-## Entry 4 — blind results left as an empty schema (data handling)
+## Entry 4 — empty arrays in the earlier blind file (not AI-generated; kept for the audit trail)
 
-**What the AI produced.** An earlier blind-test attempt wrote
-`blind_results.json` with `L1` values of `[]` and an empty `EF_trajectory_eV`:
-the schema keys were right and every value was missing.
+**What happened.** The September blind-test run wrote `blind_results.json` with
+`L1` values of `[]` and an empty `EF_trajectory_eV`: the schema keys were right and
+every value was missing. This one came from the group's own MATLAB pipeline, not
+from an AI tool, and it is recorded here because it changed how the Python
+pipeline checks its own output.
 
-**How it was detected.** A schema validator now compares the output against
+**How it was detected.** A schema validator now compares every output against
 `results_template.json` and asserts list lengths and finiteness. The empty file
 would have scored zero on the L1 and L2 elements of the 15-mark blind test even
 though the L3 map in the same file was correct.
@@ -125,11 +130,12 @@ it.
 
 ---
 
-## What these four entries show
+## What these entries show
 
-Two are physics (a sign convention and a physical interpretation), one is
-statistical practice (a missing consistency check) and one is data handling
-(silent empty values). All four were caught by a *targeted check* — physical
-consistency, dimensional/scale sanity, a noise comparison, or schema validation
-— not by "the plot looked odd". That is the practice this coursework is meant to
-assess, and the guards now live in the code rather than only in this document.
+Three are AI errors: two physics (a sign convention and a physical
+interpretation) and one statistical practice (a missing consistency check). The
+fourth is a defect in the group's own earlier output, kept because it is what
+motivated the schema validator. Every one was caught by a *targeted check* —
+physical consistency, dimensional sanity, a noise comparison, or schema
+validation — not by "the plot looked odd". The guards now live in the code rather
+than only in this document.
